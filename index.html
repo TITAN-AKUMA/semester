@@ -2,345 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Important Questions Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Smart Prep Vault | ECE Sem Exam 2026</title>
 <style>
-  :root {
-    --navy: #1F3864;
-    --blue: #2E5090;
-    --lblue: #EEF2F8;
-    --gold: #E8A020;
-    --green: #117A65;
-    --red: #C00000;
-    --purple: #7D3C98;
-    --teal: #0B5345;
-    --orange: #B7950B;
-    --dkred: #922B21;
-    --dkblue: #1B4F72;
-    --ink: #1a1a2e;
-    --bg: #f4f6fb;
-    --card: #ffffff;
-    --border: #dde3ef;
-    --text: #222;
-    --muted: #666;
-    --success-bg: #e8f8f0;
-    --success-border: #2ecc71;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-  /* HEADER */
-  .header {
-    background: var(--navy);
-    color: white;
-    padding: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  }
-  .header-top {
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .header-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.3px; }
-  .header-subtitle { font-size: 0.78rem; color: rgba(255,255,255,0.65); margin-top: 2px; }
-  .overall-progress {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .overall-count {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--gold);
-  }
-  .overall-label { font-size: 0.75rem; color: rgba(255,255,255,0.7); }
-  .progress-bar-wrap {
-    background: var(--navy);
-    padding: 0 24px 10px;
-  }
-  .progress-bar-bg {
-    height: 4px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold), #f0d060);
-    border-radius: 4px;
-    transition: width 0.4s ease;
-  }
-  /* TABS */
-  .tabs-wrap {
-    background: var(--navy);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tabs-wrap::-webkit-scrollbar { display: none; }
-  .tabs {
-    display: flex;
-    gap: 2px;
-    padding: 0 16px;
-    min-width: max-content;
-  }
-  .tab {
-    padding: 10px 14px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: rgba(255,255,255,0.55);
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-    user-select: none;
-  }
-  .tab:hover { color: rgba(255,255,255,0.85); }
-  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-  /* MAIN */
-  .main { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
-  /* SUBJECT CARD */
-  .subject-section { display: none; }
-  .subject-section.active { display: block; }
-  .subject-header-bar {
-    border-radius: 10px 10px 0 0;
-    padding: 16px 20px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 0;
-  }
-  .subject-name { font-size: 1.1rem; font-weight: 700; }
-  .subject-meta { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
-  .subject-badge {
-    background: rgba(255,255,255,0.2);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  /* PART SECTION */
-  .part-block {
-    background: var(--card);
-    border: 1px solid var(--border);
-    margin-bottom: 12px;
-  }
-  .part-block:last-child { border-radius: 0 0 10px 10px; }
-  .part-label {
-    padding: 10px 18px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .part-count {
-    font-size: 0.75rem;
-    font-weight: 500;
-    background: rgba(255,255,255,0.2);
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-  /* QUESTION ROW */
-  .q-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 11px 18px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-    cursor: pointer;
-  }
-  .q-row:last-child { border-bottom: none; }
-  .q-row:hover { background: #f8faff; }
-  .q-row.done { background: var(--success-bg); }
-  .q-row.done:hover { background: #d4f4e4; }
-  /* CHECKBOX */
-  .cb-wrap {
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .cb {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.18s;
-    background: white;
-  }
-  .cb.checked {
-    background: var(--green);
-    border-color: var(--green);
-  }
-  .cb svg { display: none; }
-  .cb.checked svg { display: block; }
-  /* Q CONTENT */
-  .q-content { flex: 1; min-width: 0; }
-  .q-text {
-    font-size: 0.88rem;
-    line-height: 1.55;
-    color: var(--text);
-    transition: color 0.15s;
-  }
-  .q-row.done .q-text {
-    color: var(--muted);
-    text-decoration: line-through;
-    text-decoration-color: var(--green);
-  }
-  .q-meta {
-    display: flex;
-    gap: 6px;
-    margin-top: 5px;
-    align-items: center;
-  }
-  .q-num {
-    font-size: 0.7rem;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .marks-badge {
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 1px 7px;
-    border-radius: 10px;
-    background: #fef0e6;
-    color: #c05000;
-  }
-  .marks-badge.two { background: #e8f0fe; color: #1a56a0; }
-  .marks-badge.lab { background: #e8f8f0; color: #117A65; }
-  /* STATS ROW */
-  .stats-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 18px;
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-  }
-  .stat-num { font-size: 1.6rem; font-weight: 800; color: var(--navy); }
-  .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-  /* FILTER BAR */
-  .filter-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .filter-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--card);
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--text);
-  }
-  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
-  .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
-  .reset-btn {
-    margin-left: auto;
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1.5px solid #ffb3b3;
-    background: #fff5f5;
-    color: var(--red);
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .reset-btn:hover { background: var(--red); color: white; border-color: var(--red); }
-  /* MINI PROGRESS */
-  .mini-prog-wrap { margin-top: 8px; }
-  .mini-prog-bg {
-    height: 5px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 5px;
-  }
-  .mini-prog-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.4s ease;
-  }
-  .mini-prog-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    display: flex;
-    justify-content: space-between;
-  }
-  /* CELEBRATION */
-  .celebrate {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--navy);
-    color: white;
-    padding: 30px 40px;
-    border-radius: 16px;
-    text-align: center;
-    z-index: 999;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    animation: popIn 0.3s ease;
-  }
-  .celebrate.show { display: block; }
-  @keyframes popIn {
-    0% { transform: translate(-50%,-50%) scale(0.7); opacity: 0; }
-    100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
-  }
-  .celebrate-icon { font-size: 3rem; margin-bottom: 10px; }
-  .celebrate-title { font-size: 1.4rem; font-weight: 800; color: var(--gold); }
-  .celebrate-sub { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-top: 6px; }
-  .celebrate-close {
-    margin-top: 18px;
-    padding: 8px 24px;
-    background: var(--gold);
-    color: var(--navy);
-    border: none;
-    border-radius: 20px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  @media (max-width: 600px) {
-    .header-top { padding: 12px 16px; }
-    .main { padding: 14px 10px 60px; }
-    .q-row { padding: 10px 14px; }
-    .q-text { font-size: 0.84rem; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0f2b3d;--gold:#f4b942;--green:#2a9d8f;--red:#e76f51;
+  --ink:#1e2a32;--bg:#f0f4f8;--white:#ffffff;
+  --border:#e2e8f0;--shadow:0 4px 24px rgba(0,0,0,0.08);
+  --radius:20px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;}
+
+/* ===== HEADER ===== */
+.header{background:linear-gradient(135deg,#0f2b3d,#1b4a6e);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.18);}
+.header-top{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.header-title{font-weight:800;font-size:1.2rem;background:linear-gradient(120deg,#fff,#f9d97e);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.header-sub{font-size:0.68rem;opacity:.75;margin-top:2px;}
+.overall-badge{background:rgba(255,255,255,.12);padding:6px 14px;border-radius:40px;text-align:center;}
+.overall-num{font-weight:800;font-size:1.2rem;color:var(--gold);}
+.overall-label{font-size:.65rem;opacity:.75;}
+.prog-wrap{padding:0 20px 10px;}
+.prog-bg{background:rgba(255,255,255,.2);border-radius:20px;overflow:hidden;}
+.prog-fill{background:linear-gradient(90deg,var(--gold),#ffcd7e);height:6px;border-radius:20px;transition:width .4s cubic-bezier(.2,.9,.4,1.1);}
+.tabs-scroll{overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.1);}
+.tabs-scroll::-webkit-scrollbar{display:none;}
+.tabs{display:flex;gap:4px;padding:8px 16px;min-width:max-content;}
+.tab{padding:7px 13px;font-size:.72rem;font-weight:600;border-radius:40px;background:rgba(255,255,255,.08);cursor:pointer;color:rgba(255,255,255,.7);transition:.2s;}
+.tab:hover{background:rgba(255,255,255,.16);}
+.tab.active{background:var(--gold);color:#0f2b3d;}
+
+/* ===== MAIN ===== */
+.main{max-width:980px;margin:20px auto;padding:0 16px 80px;}
+
+/* stats row */
+.stats-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-card{background:var(--white);border-radius:16px;padding:14px 20px;flex:1;min-width:80px;text-align:center;box-shadow:var(--shadow);}
+.stat-num{font-size:1.6rem;font-weight:800;}
+.stat-label{font-size:.7rem;color:#777;margin-top:2px;}
+
+/* filter */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.filter-btn{padding:7px 18px;border-radius:40px;border:2px solid var(--border);background:var(--white);font-size:.75rem;font-weight:600;cursor:pointer;transition:.2s;}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.reset-btn{margin-left:auto;padding:7px 14px;border-radius:40px;border:none;background:#fee2e2;color:#b91c1c;font-size:.72rem;font-weight:700;cursor:pointer;}
+
+/* ===== SUBJECT CARD ===== */
+.subject-section{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px;}
+.subject-header{padding:16px 20px;color:#fff;}
+.subject-name{font-size:1rem;font-weight:800;}
+.subject-meta{font-size:.72rem;opacity:.8;margin-top:2px;}
+.subject-badge{background:rgba(255,255,255,.2);border-radius:40px;padding:4px 12px;font-size:.72rem;font-weight:700;margin-top:8px;display:inline-block;}
+.mini-prog-wrap{padding:10px 20px 14px;}
+.mini-prog-label{display:flex;justify-content:space-between;font-size:.68rem;color:#888;margin-bottom:4px;}
+.mini-prog-bg{background:#edf2f7;border-radius:20px;height:7px;overflow:hidden;}
+.mini-prog-fill{height:100%;border-radius:20px;transition:width .4s ease;}
+
+/* PART LABEL */
+.part-block{border-top:1px solid var(--border);}
+.part-label{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;font-size:.75rem;font-weight:700;color:#fff;}
+.part-count{background:rgba(255,255,255,.25);border-radius:20px;padding:2px 9px;font-size:.68rem;}
+
+/* QUESTION ROW */
+.q-row{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid #f1f5f9;transition:.15s;position:relative;}
+.q-row:hover{background:#f8fafc;}
+.q-row.done{background:#f0fdf4;}
+.q-row.done .q-text{color:#6b7280;text-decoration:line-through;text-decoration-color:#6b7280aa;}
+
+/* checkbox */
+.cb-wrap{cursor:pointer;flex-shrink:0;padding-top:2px;}
+.cb{width:20px;height:20px;border-radius:6px;border:2.5px solid #cbd5e1;display:flex;align-items:center;justify-content:center;transition:.2s;background:#fff;}
+.cb.checked{background:var(--green);border-color:var(--green);}
+
+/* question content */
+.q-content{flex:1;min-width:0;}
+.q-text{font-size:.82rem;line-height:1.45;color:#1e2a3a;}
+.q-meta{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.q-num{font-size:.65rem;color:#94a3b8;}
+.marks-badge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:#e0f2fe;color:#0369a1;}
+.marks-badge.m13{background:#fef3c7;color:#92400e;}
+.marks-badge.m15{background:#fce7f3;color:#9d174d;}
+
+/* action buttons */
+.action-buttons{display:flex;gap:6px;flex-shrink:0;align-items:center;}
+.action-btn{width:34px;height:34px;border-radius:10px;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s;position:relative;}
+.write-btn{background:#eff6ff;color:#2563eb;}
+.write-btn:hover{background:#dbeafe;}
+.read-btn{background:#f0fdf4;color:#16a34a;}
+.read-btn:hover{background:#dcfce7;}
+.read-btn.has-data::after{content:'';position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#f59e0b;}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:24px;width:100%;max-width:560px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:.95rem;font-weight:800;color:var(--navy);}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:#f1f5f9;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.modal-qtext{padding:12px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:.8rem;color:#475569;line-height:1.5;}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* Write mode */
+.write-area{width:100%;border:2px solid var(--border);border-radius:14px;padding:12px;font-size:.82rem;line-height:1.6;font-family:inherit;resize:vertical;min-height:120px;transition:.2s;}
+.write-area:focus{outline:none;border-color:#6366f1;}
+.file-upload-zone{border:2px dashed #cbd5e1;border-radius:14px;padding:20px;text-align:center;cursor:pointer;margin-top:12px;transition:.2s;background:#fafafa;}
+.file-upload-zone:hover{border-color:#6366f1;background:#eff6ff;}
+.file-upload-zone input{display:none;}
+.file-upload-text{font-size:.78rem;color:#94a3b8;margin-top:4px;}
+
+/* previews */
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px;}
+.preview-item{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#f8fafc;}
+.preview-img{width:100%;height:80px;object-fit:cover;display:block;}
+.preview-file{padding:10px 8px;font-size:.65rem;word-break:break-all;color:#475569;text-align:center;}
+.preview-file-icon{font-size:1.5rem;display:block;margin-bottom:4px;}
+.remove-preview{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;line-height:1;}
+
+/* Read mode */
+.read-notes-text{background:#f8fafc;border-radius:14px;padding:16px;font-size:.83rem;line-height:1.7;white-space:pre-wrap;color:#1e2a3a;min-height:60px;border:1px solid var(--border);}
+.read-empty{color:#94a3b8;font-style:italic;text-align:center;padding:24px;}
+.read-files-label{font-size:.75rem;font-weight:700;color:#475569;margin:14px 0 8px;}
+.read-img{width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;transition:.2s;}
+.read-img:hover{opacity:.85;}
+.read-file-link{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f1f5f9;border-radius:10px;font-size:.75rem;color:#1e40af;text-decoration:none;font-weight:600;}
+.read-file-link:hover{background:#dbeafe;}
+
+/* img lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;display:none;align-items:center;justify-content:center;}
+.lightbox.active{display:flex;}
+.lightbox img{max-width:95vw;max-height:95vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);}
+.lightbox-close{position:fixed;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer;z-index:2001;}
+
+/* buttons */
+.btn{padding:9px 20px;border-radius:40px;border:none;font-weight:700;font-size:.8rem;cursor:pointer;transition:.2s;}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#1b4a6e;}
+.btn-secondary{background:#f1f5f9;color:#475569;}
+.btn-edit{background:#eff6ff;color:#2563eb;}
+
+/* mobile */
+@media(max-width:600px){
+  .stats-row{gap:8px;}
+  .stat-card{padding:10px 12px;}
+  .stat-num{font-size:1.3rem;}
+  .q-row{padding:10px 12px;gap:8px;}
+  .q-text{font-size:.78rem;}
+  .action-btn{width:30px;height:30px;font-size:.85rem;}
+}
 </style>
 </head>
 <body>
@@ -348,89 +157,96 @@
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="header-title">📚 Important Questions Tracker</div>
-      <div class="header-subtitle">B.E. ECE — Semester Exam May–June 2026</div>
+      <div class="header-title">📚 Smart Prep Vault</div>
+      <div class="header-sub">ECE Sem Exam — May/Jun 2026 · 9 Subjects</div>
     </div>
-    <div class="overall-progress">
-      <div>
-        <div class="overall-count" id="overall-count">0 / 0</div>
-        <div class="overall-label">questions read</div>
-      </div>
+    <div class="overall-badge">
+      <div class="overall-num" id="overallNum">0/0</div>
+      <div class="overall-label">mastered</div>
     </div>
   </div>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="overall-bar" style="width:0%"></div>
-    </div>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="overallBar" style="width:0%"></div></div>
   </div>
-  <div class="tabs-wrap">
-    <div class="tabs" id="tabs"></div>
-  </div>
+  <div class="tabs-scroll"><div class="tabs" id="tabs"></div></div>
 </div>
 
 <div class="main" id="main"></div>
 
-<div class="celebrate" id="celebrate">
-  <div class="celebrate-icon">🎉</div>
-  <div class="celebrate-title" id="celebrate-title">Subject Complete!</div>
-  <div class="celebrate-sub" id="celebrate-sub">All questions read for this subject.</div>
-  <button class="celebrate-close" onclick="document.getElementById('celebrate').classList.remove('show')">Keep Going!</button>
+<!-- Write / Read Modal -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-qtext" id="modalQText"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Image Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <script>
+// ===================== DATA =====================
 const SUBJECTS = [
   {
-    id: "aiml", code: "CS3491", name: "AI & Machine Learning", date: "18-May-2026 (Mon)", color: "#1F3864",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#2E5090", questions: [
+    id:"aiml", code:"CS3491", name:"AI & Machine Learning", date:"18-May-2026 (Mon)", color:"#6B21A8",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#7C3AED", questions:[
         [1,"2M","Define Artificial Intelligence. List its applications."],
         [2,"2M","What is adversarial search? Give an example."],
         [3,"2M","Define uncertainty in AI. How is it handled?"],
         [4,"2M","State Bayes' Rule with formula."],
         [5,"2M","Outline the difference between supervised and unsupervised learning."],
-        [6,"2M","What is a random forest? How is it different from Decision Tree?"],
+        [6,"2M","What is a random forest? How is it different from a Decision Tree?"],
         [7,"2M","Define ensemble learning. Name its three types."],
         [8,"2M","What is the significance of Gaussian Mixture Model?"],
         [9,"2M","Draw the architecture of a multilayer perceptron."],
         [10,"2M","Name any two activation functions with their equations."],
         [11,"2M","Why is ReLU better than Softmax? Give equations for both."],
-        [12,"2M","What is stochastic gradient descent and why is it used in neural networks?"],
-        [13,"2M","What are the various applications of AI?"],
-        [14,"2M","Define uniformed search. What are its types?"],
-        [15,"2M","How can overfitting be avoided in ML models?"],
+        [12,"2M","What is stochastic gradient descent and why is it used?"],
+        [13,"2M","What are the various applications of AI? How is performance measured?"],
+        [14,"2M","Define uninformed search. What are its types?"],
+        [15,"2M","How can overfitting be avoided in ML models?"]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#1F3864", questions: [
-        [1,"13M","Outline BFS and DFS uniformed search strategies with examples and comparison."],
-        [2,"13M","State the Constraint Satisfaction Problem. Outline local search for CSP with example."],
+      { label:"Part B — 13 Mark", color:"#5B21B6", questions:[
+        [1,"13M","Outline the uninformed search strategies: BFS and DFS with examples and comparison. (Repeated 2023, 2024)"],
+        [2,"13M","State the Constraint Satisfaction Problem. Outline local search for CSP with a suitable example."],
         [3,"13M","Explain Iterative Deepening Search algorithm with an example."],
-        [4,"13M","Discuss hill climbing algorithm using the 8-queens problem in detail."],
-        [5,"13M","Explain Bayes' Theorem and discuss Naive Bayes' Classifier with example."],
-        [6,"13M","What is a Bayesian network? Explain steps to construct one with example."],
-        [7,"13M","Elaborate on logistic regression with example. Explain computing coefficients."],
-        [8,"13M","What is a classification tree? Explain steps to construct it."],
-        [9,"13M","What is bagging and boosting? Outline AdaBoost algorithm with example."],
-        [10,"13M","Explain the back propagation learning algorithm. What is its importance in neural networks?"],
+        [4,"13M","Discuss in detail about hill climbing algorithm using the 8-queens problem."],
+        [5,"13M","Explain Bayes' Theorem and discuss the working of Naive Bayes' Classifier with example."],
+        [6,"13M","What is a Bayesian network? Explain the steps to construct a Bayesian network with example. (Very frequently asked)"],
+        [7,"13M","Elaborate on logistic regression with an example. Explain the process of computing coefficients."],
+        [8,"13M","What is a classification tree? Explain the steps to construct it. List different procedures used."],
+        [9,"13M","What is bagging and boosting? Outline the steps in the AdaBoost algorithm with an example."],
+        [10,"13M","Explain the steps in the back propagation learning algorithm. What is its importance in designing neural networks?"],
         [11,"13M","Explain a deep feedforward network with a neat sketch."],
-        [12,"13M","Elaborate on the steps in the expectation-maximization algorithm."],
+        [12,"13M","Elaborate on the steps in the expectation-maximization algorithm with an example."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Find least square regression line y=ax+b for given data. Estimate y when x=10."],
-        [2,"15M","Illustrate k-means algorithm on 2D data: x1=(0.5,1.75), x2=(1,2), x3=(1.75,0.25), x4=(4,1), x5=(6,3) with C1={x1,x2,x4}, C2={x3,x5}."],
-        [3,"15M","Discuss CSP with algorithm for crypt arithmetic. Trace for CROSS + ROADS = DANGER."],
-        [4,"15M","Construct a decision tree for the Play Golf dataset (14 examples)."],
-        [5,"15M","Three biased coins problem: Draw Bayesian network, define CPTs, calculate most likely coin if flips = HHT."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#4C1D95", questions:[
+        [1,"15M","Find the least square regression line y = ax + b for given data set and estimate value of y when x = 10. (2023 paper - full 15M numerical)"],
+        [2,"15M","Illustrate the k-means algorithm on a 2D data set: x1=(0.5,1.75), x2=(1,2), x3=(1.75,0.25), x4=(4,1), x5=(6,3) with C1={x1,x2,x4}, C2={x3,x5}."],
+        [3,"15M","Discuss constraint satisfaction problems with an algorithm for solving crypt arithmetic. Trace for CROSS + ROADS = DANGER."],
+        [4,"15M","Construct a decision tree for the Play Golf dataset (14 examples with Outlook, Temperature, Humidity, Wind)."],
+        [5,"15M","Consider the bag-of-three-biased-coins problem. Draw Bayesian network, define CPTs. Calculate which coin is most likely drawn if flips come up HHT."]
+      ]}
     ]
   },
   {
-    id: "iot", code: "ET3491", name: "Embedded Systems & IoT", date: "20-May-2026 (Wed)", color: "#1A5276",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#2471A3", questions: [
+    id:"esiot", code:"ET3491", name:"Embedded Systems & IoT", date:"20-May-2026 (Wed)", color:"#065F46",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#047857", questions:[
         [1,"2M","Compare CISC and RISC architectures."],
         [2,"2M","List the various timers used in 8051 microcontroller."],
-        [3,"2M","Mention features of ARM instruction set suitable for embedded applications."],
+        [3,"2M","Mention the features of ARM instruction set for embedded applications."],
         [4,"2M","What are assembler directives? List examples."],
-        [5,"2M","Define multitasking. What happens when deadlock occurs?"],
+        [5,"2M","Define multitasking. What happens when dead lock occurs?"],
         [6,"2M","Identify the challenges and issues of IoT."],
         [7,"2M","Compare Things of IoT and Machines in M2M."],
         [8,"2M","What are the GPIO pins used in Raspberry Pi board?"],
@@ -440,38 +256,38 @@ const SUBJECTS = [
         [12,"2M","What is the use of SPI and I2C interfaces on Raspberry Pi?"],
         [13,"2M","List out the various applications of IoT."],
         [14,"2M","What is the distinction between specification and architecture?"],
-        [15,"2M","Compute CPU utilization for: P1(1ms, 0.1ms), P2(1ms, 0.2ms), P3(5ms, 0.3ms)."],
+        [15,"2M","Compute CPU utilization for: P1(period=1ms, exec=0.1ms), P2(period=1ms, exec=0.2ms), P3(period=5ms, exec=0.3ms)."]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#1A5276", questions: [
-        [1,"13M","Draw the architecture of 8051 microcontroller and explain instruction execution."],
+      { label:"Part B — 13 Mark", color:"#065F46", questions:[
+        [1,"13M","Draw the architecture of 8051 microcontroller and explain how the various units interact in executing an instruction."],
         [2,"13M","Explain about various addressing modes of the 8051 microcontroller."],
-        [3,"13M","List out different types of interrupts available in 8051 and write short notes."],
+        [3,"13M","List out different types of interrupts available in 8051 and write a short note on them."],
         [4,"13M","Explain the features and classifications of ARM instruction set."],
-        [5,"13M","Explain the operating modes in ARM processor."],
-        [6,"13M","Processes P1,P2,P3,P4 arrive at t=0,0,3,4 with CPU times 6,2,1,4. Apply FCFS and Round Robin (quantum=2). Draw Gantt chart, find avg waiting and turnaround time."],
-        [7,"13M","Explain the three different states of tasks in real-time OS with state transition diagram."],
-        [8,"13M","Illustrate IoT service using request-response model and publish-subscribe model."],
-        [9,"13M","Explain the different levels of IoT with an example (neat diagrams)."],
-        [10,"13M","Explain IoT device management with NETCONF-YANG."],
-        [11,"13M","Based on functional attributes, explain the modules of an IoT device."],
-        [12,"13M","Describe Rate Monotonic Scheduling (RMS). Compare RMS with Earliest Deadline First (EDF)."],
+        [5,"13M","Outline the significances of operating modes in ARM processor. Explain the various operating modes."],
+        [6,"13M","Processes P1,P2,P3,P4 arrive at times 0,0,3,4 with CPU times 6,2,1,4. Apply FCFS and Round Robin (quantum=2). Draw Gantt chart. Calculate average waiting time and turnaround time."],
+        [7,"13M","Explain the three different states of tasks in real time operating system with state transition diagram."],
+        [8,"13M","Illustrate with an example of IoT service that follows request-response model and publish-subscribe communication model."],
+        [9,"13M","With the help of neat diagrams, explain the different levels of IoT with an example."],
+        [10,"13M","Explain the generic approach of IoT device management with NETCONF-YANG."],
+        [11,"13M","What is an IoT device? Based on functional attributes, explain the modules of an IoT device."],
+        [12,"13M","Describe how Rate Monotonic Scheduling (RMS) works. Compare RMS with Earliest Deadline First (EDF)."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Analyze IoT strategy for smart city and design the layered architecture."],
-        [2,"15M","Develop single master-single slave and single master-multiple slave SPI configuration in Raspberry Pi."],
-        [3,"15M","Write in detail about block motion estimator design within a PC system."],
-        [4,"15M","Explain the design of an IoT system for weather monitoring with diagrams."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#064E3B", questions:[
+        [1,"15M","Analyze and explain an IoT strategy for smart city and design the layered architecture for implementing smart cities."],
+        [2,"15M","Develop the single master-single slave and single master multiple slave configuration of SPI interface in Raspberry Pi."],
+        [3,"15M","Write in detail about the design process involved in block motion estimator to perform block motion estimation within a PC system."],
+        [4,"15M","Explain the design of an IoT system for weather monitoring using IoT design methodology with necessary diagrams."]
+      ]}
     ]
   },
   {
-    id: "lic", code: "EC3451", name: "Linear Integrated Circuits", date: "21-May-2026 (Thu)", color: "#117A65",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#1E8449", questions: [
-        [1,"2M","Define slew rate. What causes it? How is it significant?"],
-        [2,"2M","Compare open loop and closed loop operation of op-amp."],
+    id:"lic", code:"EC3451", name:"Linear Integrated Circuits", date:"21-May-2026 (Thu)", color:"#92400E",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#B45309", questions:[
+        [1,"2M","Define slew rate. What causes slew rate? How is it significant?"],
+        [2,"2M","Compare open loop and closed loop operation of an op-amp."],
         [3,"2M","Draw the diagram of OPAMP as integrator and differentiator."],
-        [4,"2M","How does precision rectifier differ from ordinary rectifier?"],
+        [4,"2M","How does a precision rectifier differ from an ordinary rectifier?"],
         [5,"2M","List analog multiplier ICs."],
         [6,"2M","Draw the pin diagram of IC 565."],
         [7,"2M","Which is the fastest ADC? Justify."],
@@ -480,39 +296,39 @@ const SUBJECTS = [
         [10,"2M","Sketch the circuit of a sine wave generator."],
         [11,"2M","Define capture range and lock range of PLL."],
         [12,"2M","State the applications of multivibrator."],
-        [13,"2M","Calculate LSB and MSB for 8-bit DAC for 0V to 10V range."],
+        [13,"2M","Calculate the values of LSB and MSB for an 8-bit DAC for 0V to 10V range."],
         [14,"2M","What is the function of VCO in PLL?"],
-        [15,"2M","An 8-bit DAC has output 0 to 2.55V. Find the resolution."],
+        [15,"2M","An 8-bit D/A converter has output voltage ranging from 0 to 2.55V. Find the resolution."]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#117A65", questions: [
-        [1,"13M","Explain different parameters of DC and AC characteristics of op-amp with derivation."],
-        [2,"13M","Methods for increasing input resistance of op-amp (7M) + Op-amp slew rate 2V/μs, find rise time, max frequency and full power bandwidth for 10V output (6M)."],
-        [3,"13M","Draw integrator circuit using op-amp and explain (7M) + Describe differential amplifier with neat sketch (6M)."],
-        [4,"13M","Explain half wave precision rectifier (7M) + Working of active peak detector using op-amp (6M)."],
-        [5,"13M","Describe variable transconductance multiplier circuit. Derive expression for output voltage."],
-        [6,"13M","Determine change in DC control voltage Vc during lock: fs=20KHz, free running=21KHz, V/F coefficient=4KHz."],
-        [7,"13M","Construct functional diagram of dual slope ADC and explain. Compare with successive approximation ADC."],
-        [8,"13M","Calculate step change in output voltage for 4-bit R-2R ladder DAC, input 0000 to 1111, Vfull-scale=16V."],
-        [9,"13M","Draw functional block diagram of low/high voltage regulator using IC 723. Explain current boosting, foldback and limit protection."],
-        [10,"13M","Illustrate and explain functional diagram of LM380 power amplifier."],
-        [11,"13M","Analyze voltage to current converter with load floating and ground."],
-        [12,"13M","Design multiple feedback narrow bandpass filter: fr=1kHz, Q=3, Af=10."],
+      { label:"Part B — 13 Mark", color:"#92400E", questions:[
+        [1,"13M","With necessary sketch and derivation, explain the different parameters of DC and AC characteristics of an op-amp."],
+        [2,"13M","Explain methods for increasing input resistance of an op-amp. (7M) + An op-amp has slew rate of 2V/us. Find rise time, maximum frequency and full power bandwidth for output voltage of 10V amplitude. (6M)"],
+        [3,"13M","Draw circuit of integrator using op-amp and explain. (7M) + Describe operation of a differential amplifier with neat sketch. (6M)"],
+        [4,"13M","Explain half wave precision rectifier with neat circuit diagram (7M) + Describe working of active peak detector using op-amp (6M)."],
+        [5,"13M","Describe the operation of a variable transconductance multiplier circuit. Derive the expression for output voltage."],
+        [6,"13M","Determine the change in DC control voltage Vc during lock if fs=20KHz, free running frequency=21KHz, V/F transfer coefficient of VCO=4KHz."],
+        [7,"13M","Construct the functional diagram of dual slope ADC and explain. Compare dual slope ADC with successive approximation ADC."],
+        [8,"13M","Calculate the step change in output voltage on input varying from 0000 to 1111 for a 4-bit R-2R ladder DAC. Assume full-scale voltage = 16V."],
+        [9,"13M","Draw functional block diagram of low voltage and high voltage regulator using IC 723. Explain current boosting, current foldback and current limit protection."],
+        [10,"13M","Illustrate and explain the functional diagram of LM380 power amplifier."],
+        [11,"13M","Analyze voltage to current converter with load floating and ground. How does this affect the current drawn from source?"],
+        [12,"13M","Design a multiple feedback narrow bandpass filter with fr=1kHz, Q=3 and Af=10."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","IC 555 Astable multivibrator: RA=6.8kΩ, RB=3.3kΩ, C=0.1μF. Calculate free running frequency (8M) + Design 555 square wave generator for 120Hz, 60% duty cycle, C=0.2μF (7M)."],
-        [2,"15M","Design Instrumentation amplifier with gain continuously variable over 1 ≤ A ≤ 1000."],
-        [3,"15M","Design 555 timer square wave generator for 150Hz with 70% duty cycle, C=0.1μF."],
-        [4,"15M","Design continuously adjustable power supply 2V to 5V with current limit of 1A using IC LM723."],
-        [5,"15M","Define Slew Rate, explain cause, derive expression for op-amp voltage follower (8M) + Explain Gilbert multiplier cell for four quadrant multiplication (7M)."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#78350F", questions:[
+        [1,"15M","In an Astable multivibrator using IC 555 timer, RA=6.8kΩ, RB=3.3kΩ and C=0.1µF. Calculate the free running frequency. (8M) + Design a square wave generator using IC 555 timer for 120Hz and 60% duty cycle, C=0.2µF. (7M)"],
+        [2,"15M","Design an Instrumentation amplifier whose gain can be varied continuously over range 1 ≤ A ≤ 1000. Assume all other relevant details."],
+        [3,"15M","Design a square wave generator using 555 timer for frequency 150Hz with 70% duty cycle. Assume C=0.1µF."],
+        [4,"15M","Design a continuously adjustable power supply for range 2V to 5V with a current limit of 1A using IC LM723."],
+        [5,"15M","Define Slew Rate. Explain cause of slew rate. Derive expression for Slew rate for op-amp voltage follower. (8M) + Explain Gilbert multiplier cell for four quadrant multiplication. (7M)"]
+      ]}
     ]
   },
   {
-    id: "emf", code: "EC3452", name: "Electromagnetic Fields", date: "26-May-2026 (Tue)", color: "#7D3C98",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#8E44AD", questions: [
+    id:"emf", code:"EC3452", name:"Electromagnetic Fields", date:"26-May-2026 (Tue)", color:"#1E3A5F",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#1D4ED8", questions:[
         [1,"2M","What is divergence of a vector field? State Divergence theorem."],
-        [2,"2M","Calculate the curl of gradient of scalar field V = 3xy - yz."],
+        [2,"2M","Calculate the curl of gradient of the scalar field V = 3xy - yz."],
         [3,"2M","Define Gauss's Law. List its two applications."],
         [4,"2M","What is the significance of Laplacian Operator?"],
         [5,"2M","Define Ampere's Law."],
@@ -520,43 +336,43 @@ const SUBJECTS = [
         [7,"2M","What is displacement current?"],
         [8,"2M","What is the significance of Continuity Equation?"],
         [9,"2M","Define skin depth."],
-        [10,"2M","'X-rays can penetrate human body, but light cannot'. Justify."],
+        [10,"2M","'X-rays can penetrate the human body, but light cannot'. Justify."],
         [11,"2M","State Helmholtz's theorem."],
-        [12,"2M","Transform cartesian coordinates (1, 2, 3) into spherical coordinates."],
+        [12,"2M","Transform the cartesian coordinates (1, 2, 3) into spherical coordinates."],
         [13,"2M","State Biot-Savart's law."],
         [14,"2M","Distinguish between magnetic scalar potential and magnetic vector potential."],
-        [15,"2M","State Faraday's law."],
+        [15,"2M","State Faraday's law."]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#7D3C98", questions: [
-        [1,"13M","Explain different types of coordinate systems (Cartesian, Cylindrical, Spherical) with examples."],
-        [2,"13M","State and verify Divergence theorem for A = 4xa_x - 2y²a_y + z²a_z over unit cube x=0 to 1, y=0 to 1."],
-        [3,"13M","Determine net electric flux leaving through closed surface: ρ=4, 0≤z≤1, D = ρ²cos²φ aρ + z sinφ aφ C/m²."],
-        [4,"13M","Derive E at distance r due to volume charge sphere of radius R with density ρv C/m³ for r<R and r>R."],
-        [5,"13M","Find H and B at centre of circular loop carrying current I amperes clockwise at z=0 plane, diameter 2a."],
-        [6,"13M","Prove total H outside outer coaxial conductor is zero for infinitely long coaxial line using Ampere's law."],
-        [7,"13M","Explain Maxwell's equations in integral and differential form for time varying fields."],
+      { label:"Part B — 13 Mark", color:"#1E40AF", questions:[
+        [1,"13M","Explain different types of coordinate systems (Cartesian, Cylindrical, Spherical) along with examples. OR Explain Gradient, Divergence and Curl in detail along with examples. (3+5+5=13M)"],
+        [2,"13M","State and verify Divergence theorem for vector A = 4xax - 2y²ay + z²az over cube bounded by x=0,x=1,y=0,y=1."],
+        [3,"13M","Determine net electric flux leaving through closed surface defined by ρ=4, 0≤z≤1, if D = ρ²cos²(φ)aρ + zsin(φ)aφ C/m²."],
+        [4,"13M","Derive expression for Electric Field Intensity E at distance r due to a volume charge sphere of radius R with charge density ρv C/m³. Consider r<R and r>R."],
+        [5,"13M","Find the magnetic field intensity H and magnetic flux density B at the centre of a circular loop carrying current I amperes in clockwise direction at z=0 plane, diameter 2a."],
+        [6,"13M","Prove total magnetic field intensity H outside outer coaxial conductor is zero for infinitely long coaxial transmission line using Ampere's law. Determine H at each Amperian path."],
+        [7,"13M","Explain in detail Maxwell's equations in integral and differential form for time varying fields."],
         [8,"13M","Derive wave equation and explain properties of uniform plane waves in free space."],
         [9,"13M","State and verify Stoke's theorem. Give its application."],
-        [10,"13M","Derive expression for magnetic field intensity on axis of solenoid. OR Derive inductance of solenoid (7M) and toroid (6M)."],
+        [10,"13M","Derive expression for magnetic field intensity on axis of solenoid. OR Derive expression for inductance of solenoid (7M) and toroid (6M)."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Three infinite sheets: σ=18 nC/m² at x=4, σ=9 nC/m² at y=-3, σ=-24 nC/m² at z=0. Find E at (8,0,6) and (-2,-7,1)."],
-        [2,"15M","EM wave from free space to dielectric εr=4, normal incidence. Ei=E0 cos(ωt-βz)ay, ω=3×10⁹π, β=10π. Find reflection coeff, transmission coeff, power fraction, and transmitted E field."],
-        [3,"15M","Show displacement current through parallel plate capacitor C equals conduction current I if V=Vm sin(ωt)."],
-        [4,"15M","Plane wave travels at 2.5×10⁸ m/s, wavelength 0.5mm in non-magnetic good conductor. Find frequency and conductivity."],
-        [5,"15M","Develop transmission and reflection coefficients for normal incidence from Polyethylene (εr=2.25, μr=1) to air."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#1E3A5F", questions:[
+        [1,"15M","Three infinite sheets with charge density 18 nC/m², 9 nC/m² and -24 nC/m² at x=4, y=-3, z=0. Find electric field intensity at (8,0,6) and (-2,-7,1)."],
+        [2,"15M","An EM wave travels from free space to dielectric medium with εr=4, normally incident. Electric field: Ei = E0 cos(ωt - βz) ay V/m, ω=3×10⁹π, β=10π. Calculate: reflection coefficient, transmission coefficient, fraction of power transmitted, and electric field of transmitted wave."],
+        [3,"15M","Show that displacement current through a parallel plate capacitor of capacitance C is equal to conduction current I if supply voltage V = Vm sin(ωt) is applied."],
+        [4,"15M","A uniform plane wave travels at velocity 2.5×10⁸ m/s with wavelength 0.5mm in a non-magnetic good conductor. Calculate frequency and conductivity of the medium."],
+        [5,"15M","Develop transmission and reflection coefficient when incident wave from medium 2 propagates to medium 1 in normal incidence. Assume Medium 2 = air, Medium 1 = Polyethylene with εr=2.25, μr=1."]
+      ]}
     ]
   },
   {
-    id: "ip", code: "CEC366", name: "Image Processing", date: "27-May-2026 (Wed)", color: "#B7950B",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#D4AC0D", questions: [
+    id:"ip", code:"CEC366", name:"Image Processing", date:"27-May-2026 (Wed)", color:"#065F46",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#059669", questions:[
         [1,"2M","Specify the basic components of an image processing system."],
         [2,"2M","Point out the steps for analog to digital conversion. State its need."],
         [3,"2M","Define spatial domain method. Give an example."],
         [4,"2M","What is the relationship between spatial and frequency domain filtering?"],
-        [5,"2M","Why is restoration called unconstrained restoration?"],
+        [5,"2M","Why is the restoration called unconstrained restoration?"],
         [6,"2M","Mention the drawbacks of inverse filtering."],
         [7,"2M","Formulate how the derivatives are obtained in edge detection."],
         [8,"2M","Identify the role of multiresolution analysis in image processing."],
@@ -566,75 +382,75 @@ const SUBJECTS = [
         [12,"2M","What is meant by Gray-Level transformation?"],
         [13,"2M","Define thresholding in image segmentation."],
         [14,"2M","Define texture."],
-        [15,"2M","What is meant by image compression?"],
+        [15,"2M","What is meant by image compression?"]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#B7950B", questions: [
-        [1,"13M","Explain the fundamental steps involved in digital image processing systems."],
-        [2,"13M","Assess about image quantization and sampling and their importance in DIP."],
-        [3,"13M","Compose about the various grey level transformations with examples and plot graphs."],
-        [4,"13M","Tabulate the various filters available under frequency domain for image enhancement."],
+      { label:"Part B — 13 Mark", color:"#047857", questions:[
+        [1,"13M","In detail explain the fundamental steps involved in digital image processing systems."],
+        [2,"13M","Assess about image quantization and sampling and their importance and need in digital image processing."],
+        [3,"13M","Compose about the various grey level transformations with examples and plot the graph of the transformation functions."],
+        [4,"13M","Tabulate the various filters available under frequency domain for image enhancement (Ideal, Butterworth, Gaussian)."],
         [5,"13M","Enumerate Discrete Fourier Transform in detail."],
-        [6,"13M","Explain about smoothing and sharpening spatial filtering in detail."],
-        [7,"13M","Summarize noise models with PDF and plots: Gaussian, Rayleigh, Gamma, Exponential noise (4+3+3+3M)."],
-        [8,"13M","Design constrained least square filtering for image restoration and derive transfer function."],
+        [6,"13M","Explain about smoothing and sharpening spatial filtering in detail. (Frequently asked)"],
+        [7,"13M","Summarize the noise model with probability density function and plots: Gaussian, Rayleigh, Gamma, Exponential noise. (4+3+3+3M)"],
+        [8,"13M","Design constrained least square filtering for image restoration and derive its transfer function."],
         [9,"13M","How is image restoration performed using Wiener filtering? Explain in detail."],
         [10,"13M","Design the Canny edge detector with necessary equations and write its algorithm."],
         [11,"13M","Briefly discuss about edge linking via Hough transform."],
-        [12,"13M","What are object recognition methods in image processing? How do they apply in pattern classification?"],
-        [13,"13M","Evaluate need for image compression. How is run length encoding used? Is it lossy? Justify."],
+        [12,"13M","What are all the object recognition methods used in image processing for decision making? How do they apply in pattern classification?"],
+        [13,"13M","Evaluate the need for image compression. How is run length encoding approach used for compression? Is it lossy? Justify."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Describe histogram equalization. Obtain it for a 5×5 image segment. Write inference before and after equalization."],
-        [2,"15M","Find Huffman code and average length for source A={a1,a2,a3,a4,a5} with P=[0.2, 0.4, 0.2, 0.1, 0.1]."],
-        [3,"15M","Compare and correlate various image restoration filters with examples and algorithms."],
-        [4,"15M","Discuss homomorphic filtering and explain its use in correcting non-uniform illumination."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#064E3B", questions:[
+        [1,"15M","Describe histogram equalization. Obtain Histogram equalization for the following image segment of size 5x5. Write inference on image segment before and after equalization."],
+        [2,"15M","Solve and find a Huffman code and average length of code and its redundancy for source emitting letters A={a1,a2,a3,a4,a5} with P(a1)=0.2, P(a2)=0.4, P(a3)=0.2, P(a4)=0.1, P(a5)=0.1."],
+        [3,"15M","Compare and correlate various image restoration filters with an example and algorithms."],
+        [4,"15M","Discuss homomorphic filtering and explain in detail how it is used in correcting non-uniform illumination in images."]
+      ]}
     ]
   },
   {
-    id: "sat", code: "CEC352", name: "Satellite Communication", date: "03-Jun-2026 (Wed)", color: "#1B4F72",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#2E86C1", questions: [
+    id:"satcom", code:"CEC352", name:"Satellite Communication", date:"03-Jun-2026 (Wed)", color:"#1E3A5F",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#0369A1", questions:[
         [1,"2M","Differentiate geostationary and geosynchronous orbit."],
         [2,"2M","Recall Kepler's three laws of planetary motion."],
         [3,"2M","How does the bandwidth of a transponder be increased?"],
         [4,"2M","List the functions of TTC & M in satellite communication."],
-        [5,"2M","Mention the parameters for determining quality and strength of received signal."],
-        [6,"2M","Calculate free space loss at 6 GHz, range = 40,000 km."],
+        [5,"2M","Mention the parameters involved in determining quality and strength of received signal."],
+        [6,"2M","Calculate the free space loss at a frequency of 6 GHz, when the range between a ground station and a satellite is 40,000 km."],
         [7,"2M","Mention the advantages of CDMA in satellite communication."],
         [8,"2M","What is the use of control bits in the data frame?"],
         [9,"2M","Differentiate GPS and differential GPS."],
         [10,"2M","Classify the various types of satellite services."],
         [11,"2M","State Kepler's 2nd law of planetary motion."],
-        [12,"2M","Why is thermal control necessary in a satellite?"],
+        [12,"2M","Why thermal control is necessary in a satellite?"],
         [13,"2M","What is the difference between a transmitter and a transponder?"],
         [14,"2M","Define Fade margin."],
-        [15,"2M","What are the advantages of DAMA?"],
+        [15,"2M","What are the advantages of DAMA?"]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#1B4F72", questions: [
-        [1,"13M","Describe theory and analysis for determining look angles of satellite. OR Explain orbital perturbations and methodologies to mitigate them."],
-        [2,"13M","Elliptical orbit major axis=42000km, perigee=8000km. Find apogee and eccentricity (5M). Find viewing angle of satellite at 42000km, elevation angle=25° (5M)."],
-        [3,"13M","Categorize three main systems for tracking satellites. Explain main functions of TTC sub systems."],
-        [4,"13M","Satellite at 42000km transmits 2W, antenna gain=18dB. Calculate flux density, power received (aperture=10m²), gain of receiving antenna, C/N (T=172K, BW=500MHz, f=12GHz)."],
-        [5,"13M","Discuss various types of system noise power in satellite communication and methodologies to mitigate."],
-        [6,"13M","Calculate C/N₀ for link budget at 12GHz: free space loss=186dB, pointing loss=2dB, absorption=3dB, G/T=17.5dB/K, feeder loss=2dB, EIRP=48dBW."],
-        [7,"13M","Perform detailed analysis on how compression and encryption of signals are carried out in communication satellites."],
-        [8,"13M","Perform detailed analysis of channel allocation schemes applicable to satellite communication."],
-        [9,"13M","Derive expression for equivalent voice channel capacity of TDMA system. Draw frame structure of TDMA (9+4M)."],
-        [10,"13M","Draw block diagram of outdoor and indoor units of VSAT terminal. OR Draw schematic diagrams for GPS position location on plane, in space, and ECEF coordinate system."],
-        [11,"13M","Narrate the various applications of the Indian National Satellite System (INSAT). How did it enhance Indian education?"],
+      { label:"Part B — 13 Mark", color:"#075985", questions:[
+        [1,"13M","Describe the theory and analysis in determining the look angles of the satellite. OR Explain orbital perturbations and methodologies to mitigate the same."],
+        [2,"13M","A satellite is moving in an elliptical orbit with major axis = 42000 km. If perigee distance = 8000 km, find apogee and orbit eccentricity. (5M) + Find viewing angle of geostationary satellite orbiting at 42000km from earth station making elevation angle of 25 degrees. (5M)"],
+        [3,"13M","Categorize the three main systems for tracking satellites. How can tracking systems be affected? Explain the main functions of TTC sub systems."],
+        [4,"13M","A Satellite at 42000km transmits 2W with antenna gain of 18dB. Calculate flux density on earth surface, power received by antenna with effective aperture of 10m², gain of receiving antenna and received C/N assuming Ts=172K and BW=500MHz operating at 12GHz."],
+        [5,"13M","Discuss the various types of system noise power present in satellite communication and suggest methodologies to mitigate the same."],
+        [6,"13M","Calculate C/N0 for link budget at 12GHz. Parameters: free space loss=186dB, antenna pointing loss=2dB, atmospheric absorption=3dB, receiver G/T=17.5dB/K, receiver feeder losses=2dB, EIRP=48dBW."],
+        [7,"13M","Perform a detailed analysis on how compression and encryption of signals are carried out in communication satellites."],
+        [8,"13M","Perform a detailed analysis of the various channel allocation schemes applicable to satellite communication."],
+        [9,"13M","Derive expression for equivalent voice channel capacity of a TDMA system. Draw the frame structure of TDMA. (9+4M)"],
+        [10,"13M","Draw the block diagram of outdoor and indoor units of VSAT terminal. OR Draw schematic diagrams for GPS position location on a plane, in space, and ECEF coordinate system."],
+        [11,"13M","Narrate the various applications of the Indian National Satellite System. How did it enhance the Indian education ecosystem?"]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Evaluate bit rate for satellite transponder: BW=36MHz, QPSK, raised cosine filter, roll-off=0.2, BER=10⁻⁵, total loss=200dB, receiving earth station G/T=32dB/K."],
-        [2,"15M","Satellite in elliptical orbit: apogee=35786km, perigee=300km above earth. Inclination=0°. Calculate incremental velocity at apogee for circularization. (Earth radius=6378km)"],
-        [3,"15M","Geostationary satellite: round-trip delay variation=40ns/s. DS-CDMA sync must not exceed 20% of chip duration. Determine max allowable chip rate. If max chip rate=25Mbps, find max permissible Doppler variation."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#0C4A6E", questions:[
+        [1,"15M","Evaluate bit rate accommodated by satellite transponder operating with bandwidth of 36MHz transmitting QPSK signal with raised cosine filtering, roll-off factor=0.2, BER=10⁻⁵. Link budget total loss=200dB downlink, receiving earth station G/T=32dB/K."],
+        [2,"15M","A satellite is running in elliptical transfer orbit with apogee=35786km and perigee=300km above earth. Transfer orbit inclination to equatorial plane=0. Calculate incremental velocity to give at apogee by apogee kick motor to circularize the orbit. (Assume earth radius=6378km)"],
+        [3,"15M","A geostationary satellite has round-trip propagation delay variation of 40ns/s due to station-keeping errors. Time synchronization of DS-CDMA signals must not exceed 20% of chip duration. Determine maximum allowable chip rate. Also find maximum permissible Doppler variation if maximum chip rate is 25Mbps."]
+      ]}
     ]
   },
   {
-    id: "mems", code: "CEC340", name: "MEMS Design", date: "05-Jun-2026 (Fri)", color: "#922B21",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#C0392B", questions: [
+    id:"mems", code:"CEC340", name:"MEMS Design", date:"05-Jun-2026 (Fri)", color:"#7F1D1D",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#B91C1C", questions:[
         [1,"2M","Define conductivity of semiconductors."],
         [2,"2M","What are crystal planes and orientations? Define Miller indices."],
         [3,"2M","Define stress and strain. State Hooke's law."],
@@ -644,36 +460,36 @@ const SUBJECTS = [
         [7,"2M","What is a comb drive actuator? Where is it used?"],
         [8,"2M","What are interdigitated finger capacitors?"],
         [9,"2M","Define thermal expansion. How is it used in MEMS sensors?"],
-        [10,"2M","What are thermocouple sensors in MEMS?"],
+        [10,"2M","What are thermocouple sensors?"],
         [11,"2M","Define the piezoelectric effect."],
         [12,"2M","Name four piezoelectric materials used in MEMS."],
         [13,"2M","What is a cantilever piezoelectric actuator?"],
         [14,"2M","What are micromagnetic actuators?"],
-        [15,"2M","What is magnetization? State principles of MEMS magnetic actuators."],
+        [15,"2M","What is magnetization? State the principles of MEMS magnetic actuators."]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#922B21", questions: [
-        [1,"13M","Explain electrical and mechanical concepts of MEMS: conductivity, crystal planes, stress and strain."],
-        [2,"13M","Perform flexural beam bending analysis under simple loading. Derive bending moment and deflection expressions."],
-        [3,"13M","Explain parallel plate capacitor model for electrostatic actuation. Describe applications as inertial, pressure, flow and tactile sensor."],
-        [4,"13M","Explain applications of comb drive devices and interdigitated finger capacitors in MEMS."],
+      { label:"Part B — 13 Mark", color:"#991B1B", questions:[
+        [1,"13M","Explain the essential electrical and mechanical concepts of MEMS design: conductivity of semiconductors, crystal planes and orientations, stress and strain."],
+        [2,"13M","Perform flexural beam bending analysis under simple loading conditions. Derive the expression for bending moment and deflection."],
+        [3,"13M","Explain parallel plate capacitor model for electrostatic actuation. Describe its applications as inertial sensor, pressure sensor, flow sensor and tactile sensor."],
+        [4,"13M","Explain the applications of comb drive devices and interdigitated finger capacitors in MEMS."],
         [5,"13M","Describe fundamentals of thermal transfer. Explain sensors and actuators based on thermal expansion."],
         [6,"13M","Explain thermal couples and thermal resistors. Describe applications: infrared sensors, flow sensors, inertial sensors."],
-        [7,"13M","Explain mathematical description of piezoelectric effects. Describe cantilever piezoelectric actuator model."],
-        [8,"13M","Compare properties of piezoelectric materials: Quartz, PZT, PVDF, ZnO. Explain acoustic and tactile sensors."],
-        [9,"13M","Explain concepts and principles of magnetization. Describe fabrication of micro magnetic components, design of magnetic coil and MEMS magnetic actuators."],
-        [10,"13M","Explain design and simulation of piezoelectric cantilever. How is simulation performed?"],
+        [7,"13M","Explain the mathematical description of piezoelectric effects. Describe cantilever piezoelectric actuator model."],
+        [8,"13M","Compare properties of piezoelectric materials: Quartz, PZT, PVDF, ZnO. Explain acoustic sensors and tactile sensors."],
+        [9,"13M","Explain concepts and principles of magnetization in micromagnetic actuators. Describe fabrication of micro magnetic components: deposition, design and fabrication of magnetic coil."],
+        [10,"13M","Explain design and simulation of piezoelectric cantilever (practical exercise). How is simulation performed?"]
       ]},
-      { label: "Practical & Lab Focus Questions", color: "#117A65", questions: [
-        [1,"Lab","Design and simulation of piezoelectric cantilever — explain the steps and parameters."],
-        [2,"Lab","Design and simulation of thermo couples — explain the procedure and output."],
-        [3,"Lab","Design and simulation of comb drive actuators — explain parameters and simulation."],
-      ]},
+      { label:"Part C / Lab — 15 Mark", color:"#7F1D1D", questions:[
+        [1,"15M","Design and simulation of piezoelectric cantilever — explain the steps in detail."],
+        [2,"15M","Design and simulation of thermo couples — explain the procedure."],
+        [3,"15M","Design and simulation of comb drive actuators — explain parameters."]
+      ]}
     ]
   },
   {
-    id: "cs", code: "EC3491", name: "Communication Systems", date: "11-Jun-2026 (Thu)", color: "#0B5345",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#117A65", questions: [
+    id:"comsys", code:"EC3491", name:"Communication Systems", date:"11-Jun-2026 (Thu)", color:"#0B5345",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#0D9488", questions:[
         [1,"2M","What is modulation? What is the need for modulation?"],
         [2,"2M","What is the Hilbert Transform of an impulse function δ(t)?"],
         [3,"2M","Define sampling theorem."],
@@ -684,37 +500,37 @@ const SUBJECTS = [
         [8,"2M","Draw constellation diagram of 8-QAM."],
         [9,"2M","Define correlation receiver."],
         [10,"2M","What is the meaning of likelihood in maximum likelihood decoding?"],
-        [11,"2M","A 500W carrier is modulated to 60% depth. Find power saved in DSB-SC vs conventional AM."],
-        [12,"2M","Find frequency deviation Δf and bandwidth using Carson's rule for s(t)=100cos[2π5000t + 3sin(2π200t)]."],
-        [13,"2M","State Carson's Rule."],
+        [11,"2M","A 500W carrier is modulated to a depth of 60%. Determine percentage of power saved in DSB-SC compared to conventional AM."],
+        [12,"2M","Find frequency deviation and bandwidth using Carson's rule for FM signal s(t) = 100cos[2π×5000t + 3sin(2π×200t)]."],
+        [13,"2M","State Carson's Rule. State significance of sampling theorem."],
         [14,"2M","What is Hamming Bound?"],
-        [15,"2M","Differentiate between coherent and noncoherent receivers."],
+        [15,"2M","Differentiate between coherent and noncoherent receivers."]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#0B5345", questions: [
-        [1,"13M","DSB-SC with non-linear device Vo = aVi + bVi³, output through BPF. Vi = Ac cos(2πfc t) + m(t). Calculate fc."],
-        [2,"13M","Calculate the Hilbert Transform of f(t) = cos(ω₁t) + sin(ω₂t)."],
-        [3,"13M","Message signal 10cos(4π×10³t) transmitted through PCM. Sampling frequency = 2 × Nyquist rate. SQNR ≥ 22dB. Find transmission bandwidth and SQNR in dB."],
-        [4,"13M","Calculate Nyquist sampling rate for x(t) = sin(100πt)·sinc(200t)/(πt)."],
+      { label:"Part B — 13 Mark", color:"#0F766E", questions:[
+        [1,"13M","A DSB-SC signal is generated with carrier frequency fc=1MHz using non-linear device with output Vo = aVi + bVi³. Output filtered by BPF. Let Vi = Ac cos(2π×fc×t) + m(t). Calculate fc."],
+        [2,"13M","Calculate the Hilbert Transform of f(t) = cos(ω1t) + sin(ω2t)."],
+        [3,"13M","A message signal 10cos(4π×10³t) is transmitted through PCM system. Sampling frequency = twice Nyquist rate. SQNR should be minimum 22dB. Find transmission bandwidth and SQNR in dB."],
+        [4,"13M","Calculate Nyquist sampling rate for x(t) = sin(100πt).sinc(200t) / (πt)."],
         [5,"13M","Explain in detail Viterbi decoders. OR Explain DPCM transmitter and receiver in detail."],
-        [6,"13M","For (n=7, k=4) linear block code with generator matrix G, construct codebook, find dmin, error correction capability, parity check matrix, decode r=(0;0;1;1;0;1;0)."],
-        [7,"13M","Cyclic code (n=7, k=4) with g(x)=1+x²+x³. Develop encoder, find generator matrix C, parity-check H, systematic code word for (1100), error polynomial for received word 1001001."],
-        [8,"13M","Draw and explain square law modulator and detector. OR Explain superheterodyne receiver and advantages over Tuned Radio Frequency receivers."],
-        [9,"13M","Derive output SNR for AM receiver using envelope detection. Compare with SSB and DSB-SC receivers."],
-        [10,"13M","Difference between M-ary QAM and M-ary PSK. Explain using constellation diagram for M=2, 4, 16."],
-        [11,"13M","Derive probability of error for Binary FSK. Compare BER with BPSK."],
-        [12,"13M","What is matched filter receiver? Derive expression for its impulse response."],
+        [6,"13M","For (n=7, k=4) linear block code with given generator matrix G, construct codebook, find minimum Hamming distance, error correction/detection capability, parity check matrix, decode r=(0;0;1;1;0;1;0)."],
+        [7,"13M","Consider (n=7, k=4) cyclic code with generator polynomial g(x)=1+x²+x³. Develop encoder, determine generator matrix C and parity-check matrix H, find systematic code word for (1100), find error polynomial for received word 1001001."],
+        [8,"13M","Draw and explain working of square law modulator and square law detector. OR Explain superheterodyne receiver and advantages over Tuned Radio Frequency receivers."],
+        [9,"13M","Derive output signal-to-noise ratio for AM receiver using envelope detection. Compare with SSB and DSB-SC receivers."],
+        [10,"13M","What is difference between M-ary QAM and M-ary PSK? Explain using constellation diagram for M=2,4,16."],
+        [11,"13M","Derive probability of error for Binary FSK modulation scheme. Compare BER with BPSK."],
+        [12,"13M","What is matched filter receiver? Derive expression for impulse response of matched filter receiver."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","m(t)=cos(4π×10³t), c(t)=5cos(2π×10⁶t). FM signal: peak frequency deviation = 3× AM bandwidth. Calculate coefficient of cos[4π(1006×10³)t] in FM signal in terms of Bessel coefficients."],
-        [2,"15M","Analog signal: max freq 1kHz, range 0-5V, encoded with resolution 0.005%. Find (i) Min sampling rate (ii) Min bits (iii) RMS quantization noise (iv) SQNR in dB."],
-        [3,"15M","Ten sinusoidal signals bandlimited to 5kHz multiplexed using TDM. Sampling rate 50% more than Nyquist. Max quantization error ≤2% of peak. Sync bits=5. Determine transmission bit rate."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#0B5345", questions:[
+        [1,"15M","Let m(t)=cos(4π×10³t) be message signal and c(t)=5cos(2π×10⁶t) be carrier. FM signal is generated. Peak frequency deviation = 3 times AM bandwidth. Calculate the coefficient of cos[4π(1006×10³)t] in the FM signal in terms of Bessel coefficients."],
+        [2,"15M","An analog voltage signal with max frequency 1kHz and voltage range 0 to 5V, digitally encoded with resolution 0.005%: (i) Min sampling rate (ii) Min number of bits (iii) RMS quantization noise value (iv) SQNR in dB."],
+        [3,"15M","Ten sinusoidal message signals each bandlimited to 5kHz are multiplexed using TDM. Sampling rate 50% more than Nyquist. Max quantization error ≤2% of peak amplitude. Synchronization bits = 5. Determine transmission bit rate."]
+      ]}
     ]
   },
   {
-    id: "cpds", code: "CS3353", name: "C Programming & Data Structures", date: "17-Jun-2026 (Wed)", color: "#1A5276",
-    sections: [
-      { label: "Part A — 2 Mark Questions", color: "#2471A3", questions: [
+    id:"cpds", code:"CS3353", name:"C Programming & Data Structures", date:"17-Jun-2026 (Wed)", color:"#1A5276",
+    sections:[
+      { label:"Part A — 2 Mark", color:"#2471A3", questions:[
         [1,"2M","What is recursive function? Define recursion."],
         [2,"2M","When is the ternary operator used?"],
         [3,"2M","State the usage of union in C."],
@@ -725,248 +541,397 @@ const SUBJECTS = [
         [8,"2M","What is an expression tree?"],
         [9,"2M","What are the limitations of linear search?"],
         [10,"2M","What is the fundamental concept of merge sort?"],
-        [11,"2M","Define linked list. Define insertion sort with example."],
+        [11,"2M","Define linked list. Define insertion sort. Give an example."],
         [12,"2M","What operation does isEmpty() function perform?"],
-        [13,"2M","Convert infix to postfix: (A - B/C)*(D/E - F)"],
+        [13,"2M","Convert the infix expression to postfix: (A - B/C)*(D/E - F)"],
         [14,"2M","What is rehashing? When is it preferred?"],
-        [15,"2M","Is linear search better than binary search? Why?"],
+        [15,"2M","Is linear search better than binary search? Why?"]
       ]},
-      { label: "Part B — 13 Mark Questions", color: "#1A5276", questions: [
-        [1,"13M","What is the use of looping? Explain entry-controlled and exit-controlled loops in C with sample programs."],
-        [2,"13M","What is an array? List various types. Elaborate on 2D array with an example."],
-        [3,"13M","Significance of structure in C (10M) + Differences between structures and unions (3M)."],
-        [4,"13M","Write and explain algorithms of enqueue and dequeue operations of queue (7M) + Short notes on doubly linked list (6M)."],
-        [5,"13M","Write algorithms of peek and display operations of stack (7M) + Explain any one application of queue (6M)."],
-        [6,"13M","What is tree traversal? Explain methods (7M) + Construct expression tree for (p+r*q)+((s*t+u)*v), give all three traversals (6M)."],
+      { label:"Part B — 13 Mark", color:"#1A5276", questions:[
+        [1,"13M","What is the use of looping? Explain entry-controlled and exit-controlled loops in C with appropriate sample C programs."],
+        [2,"13M","What is an array? List the various types of arrays. Elaborate on 2D array with an example."],
+        [3,"13M","Significance of structure in C (10M) + Enumerate differences between structures and unions (3M). OR Explain procedure to pass array as argument to function with example (7M) + Write brief notes on preprocessor directives (6M)."],
+        [4,"13M","Write and explain algorithms of enqueue and dequeue operations of queue (7M) + Write short notes on doubly linked list with few operations (6M)."],
+        [5,"13M","Write and explain algorithms of peek and display operations of stack (7M) + With appropriate diagram explain any one application of queue (6M)."],
+        [6,"13M","What is tree traversal? Explain various methods (7M) + Construct expression tree for (p+r*q)+((s*t+u)*v). Give inorder, preorder, postorder traversals (6M)."],
         [7,"13M","What is hash function? Explain hashing with example (7M) + Construct BST for {20,30,10,40,50,-20,-30,60} (6M)."],
-        [8,"13M","Sort using quick sort: 35,40,45,50,55,30,25,20,15. Illustrate each step (9M) + Algorithm of linear search (4M)."],
-        [9,"13M","Explain procedure for converting infix to postfix using stack. Convert x*(w+y/2*x^(4+x)) and evaluate for x=1, y=2, w=3."],
-        [10,"13M","State and explain array and linked implementations of BST. OR BST from Figure 1: find traversals, insert nodes 12,22,33,44,55, demonstrate deletion of 43."],
-        [11,"13M","Explain insertion sort: basic idea, pseudo code and example. OR Min heap vs max heap: show heap sort for 142,543,123,65,453,879,572,434,111,242,311,102."],
-        [12,"13M","State and explain Queue ADT. Implement stack using two queues."],
+        [8,"13M","Sort following values using quick sort: 35,40,45,50,55,30,25,20,15. Illustrate each step. (9M) + Write and explain algorithm of linear search (4M)."],
+        [9,"13M","Explain the procedure for converting infix to postfix expression using stack. Convert x*(w+y/2*x^(4+x)) and evaluate using x=1, y=2, w=3."],
+        [10,"13M","State and explain the array and linked implementations of BST with pseudo code. OR Consider the BST in Figure 1. Find in-order, pre-order, post-order traversals. Insert 12,22,33,44,55. Demonstrate deletion of 43."],
+        [11,"13M","Explain basic idea behind insertion sort. Illustrate with pseudo code and example. OR Distinguish between min heap and max heap. Show heap sort for 142,543,123,65,453,879,572,434,111,242,311,102."],
+        [12,"13M","State and explain queue ADT. Implement stack using two queues."]
       ]},
-      { label: "Part C — 15 Mark Questions", color: "#117A65", questions: [
-        [1,"15M","Given {4371,1323,6173,4199,4344,9679,1989} and h(x)=X(mod 10): (i) Separate chaining (3M) (ii) Linear probing (4M) (iii) Quadratic probing (4M) (iv) Double hashing h2(x)=7-(x mod 7) (4M)."],
-        [2,"15M","Sort 4,6,8,2,9,5,1,7,3 using: (i) Merge sort (8M) (ii) Quick sort with first element as pivot (7M)."],
-        [3,"15M","Given two sorted lists, create new list representing intersection. Use own memory. A dummy node can be used (10M) + Find time complexity of nested for loop (5M)."],
-        [4,"15M","Create nested structures for 100 employees (name, id, pay, deductions). Calculate income tax: 20% if income>1 lakh, 30% if >3 lakhs. Print report with name, id, tax."],
-      ]},
+      { label:"Part C — 15 Mark", color:"#154360", questions:[
+        [1,"15M","Given input {4371,1323,6173,4199,4344,9679,1989} and hash function h(x)=X(mod 10), show: (i) Separate chaining hash table (3M) (ii) Open addressing using linear probing (4M) (iii) Open addressing using quadratic probing (4M) (iv) Open addressing with second hash function h2(x)=7-(x mod 7) (4M)."],
+        [2,"15M","Sort the sequence 4,6,8,2,9,5,1,7,3 using: (i) Merge sort (8M) (ii) Quick sort with first element as pivot (7M)."],
+        [3,"15M","Given two lists sorted in increasing order, create and return a new list representing intersection of the two lists. New list should use own memory - original lists should not change. A dummy node can be used. (10M) + Find time complexity of nested for loop code (5M)."],
+        [4,"15M","Create nested structures to store name, id, pay, deductions for 100 employees. Write C program to calculate income tax: 20% if total income >1 lakh, 30% if >3 lakhs. Print report with name, id, tax to be paid."]
+      ]}
     ]
-  },
+  }
 ];
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-const STATE_KEY = "iqtracker_v1";
-let state = {};
-try { state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}"); } catch(e) { state = {}; }
+// ===================== STORAGE (IndexedDB for large files) =====================
+const DB_NAME = "SmartPrepVault";
+const DB_VER = 1;
+let db = null;
 
-function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
-
-function qKey(subjectId, secIdx, qIdx) {
-  return `${subjectId}_${secIdx}_${qIdx}`;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains("notes")) d.createObjectStore("notes");
+      if(!d.objectStoreNames.contains("checks")) d.createObjectStore("checks");
+    };
+    req.onsuccess = e => { db = e.target.result; res(db); };
+    req.onerror = () => rej();
+  });
 }
 
-function isChecked(subjectId, secIdx, qIdx) {
-  return !!state[qKey(subjectId, secIdx, qIdx)];
+function dbGet(store, key){ return new Promise(res=>{ const tx=db.transaction(store,"readonly"); tx.objectStore(store).get(key).onsuccess=e=>res(e.target.result||null); }); }
+function dbSet(store, key, val){ return new Promise(res=>{ const tx=db.transaction(store,"readwrite"); tx.objectStore(store).put(val,key).onsuccess=()=>res(); }); }
+function dbDel(store, key){ return new Promise(res=>{ const tx=db.transaction(store,"readwrite"); tx.objectStore(store).delete(key).onsuccess=()=>res(); }); }
+
+// in-memory cache
+let checkState = {};  // { key: bool }
+let noteCache = {};   // { key: { text, files:[{name,type,dataURL}] } }
+
+function noteKey(subjId,secIdx,qIdx){ return `${subjId}_${secIdx}_${qIdx}`; }
+
+async function loadAll(){
+  // checks
+  const checks = await dbGet("checks","all") || {};
+  checkState = checks;
+  // notes meta (we lazy-load per question for performance)
+  const noteKeys = await dbGet("notes","__index__") || [];
+  noteCache = {};
+  for(const k of noteKeys){ noteCache[k] = null; } // mark as existing but not loaded
 }
 
-function toggle(subjectId, secIdx, qIdx) {
-  const k = qKey(subjectId, secIdx, qIdx);
-  state[k] = !state[k];
-  saveState();
+async function getNote(subjId,secIdx,qIdx){
+  const k = noteKey(subjId,secIdx,qIdx);
+  if(noteCache[k] === undefined) return { text:"", files:[] };
+  if(noteCache[k] === null){ // load from db
+    noteCache[k] = await dbGet("notes", k) || { text:"", files:[] };
+  }
+  return noteCache[k];
 }
 
-// ── COUNT HELPERS ─────────────────────────────────────────────────────────────
-function countSubject(subj) {
-  let total = 0, done = 0;
-  subj.sections.forEach((sec, si) => {
-    sec.questions.forEach((q, qi) => {
-      total++;
-      if (isChecked(subj.id, si, qi)) done++;
+async function setNote(subjId,secIdx,qIdx,text,files){
+  const k = noteKey(subjId,secIdx,qIdx);
+  const note = { text, files };
+  noteCache[k] = note;
+  await dbSet("notes", k, note);
+  // update index
+  const idx = await dbGet("notes","__index__") || [];
+  if(!idx.includes(k)) idx.push(k);
+  await dbSet("notes","__index__",idx);
+}
+
+async function deleteNote(subjId,secIdx,qIdx){
+  const k = noteKey(subjId,secIdx,qIdx);
+  delete noteCache[k];
+  await dbDel("notes",k);
+}
+
+function isChecked(subjId,secIdx,qIdx){ return !!checkState[noteKey(subjId,secIdx,qIdx)]; }
+function hasNoteData(subjId,secIdx,qIdx){ const k=noteKey(subjId,secIdx,qIdx); return noteCache[k] !== undefined && noteCache[k] !== null && (noteCache[k].text?.trim() || noteCache[k].files?.length); }
+
+function toggleCheck(subjId,secIdx,qIdx){
+  const k = noteKey(subjId,secIdx,qIdx);
+  checkState[k] = !checkState[k];
+  dbSet("checks","all",checkState);
+}
+
+function countSubject(subj){
+  let total=0,done=0;
+  subj.sections.forEach((sec,si)=>{ sec.questions.forEach((_,qi)=>{ total++; if(isChecked(subj.id,si,qi)) done++; }); });
+  return {total,done};
+}
+function countAll(){
+  let t=0,d=0;
+  SUBJECTS.forEach(s=>{ let c=countSubject(s); t+=c.total; d+=c.done; });
+  return {total:t,done:d};
+}
+
+// ===================== STATE =====================
+let activeSubject = 0, filterMode = "all";
+
+// ===================== RENDER =====================
+function esc(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function marksClass(m){ if(m==="13M") return "marks-badge m13"; if(m==="15M") return "marks-badge m15"; return "marks-badge"; }
+
+function renderQuestionRow(subj,secIdx,qIdx,q,checked){
+  const k = noteKey(subj.id,secIdx,qIdx);
+  const hasNote = noteCache[k] && (noteCache[k].text?.trim() || noteCache[k].files?.length);
+  return `<div class="q-row${checked?' done':''}" id="qrow_${k}">
+    <div class="cb-wrap" onclick="onCheck('${subj.id}',${secIdx},${qIdx})">
+      <div class="cb${checked?' checked':''}">
+        ${checked?`<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2.2"/></svg>`:''}
+      </div>
+    </div>
+    <div class="q-content">
+      <div class="q-text">${esc(q[2])}</div>
+      <div class="q-meta"><span class="q-num">Q${q[0]}</span><span class="${marksClass(q[1])}">${q[1]}</span></div>
+    </div>
+    <div class="action-buttons">
+      <button class="action-btn write-btn" title="Write notes" onclick="openWrite('${subj.id}',${secIdx},${qIdx})">✏️</button>
+      <button class="action-btn read-btn${hasNote?' has-data':''}" title="Read notes" onclick="openRead('${subj.id}',${secIdx},${qIdx})">📖</button>
+    </div>
+  </div>`;
+}
+
+function renderSubject(subj){
+  const {total,done} = countSubject(subj);
+  const pct = total ? Math.round(done/total*100) : 0;
+  let html = `<div class="subject-section">
+    <div class="subject-header" style="background:${subj.color}">
+      <div class="subject-name">${subj.name}</div>
+      <div class="subject-meta">${subj.code} &nbsp;•&nbsp; ${subj.date}</div>
+      <div class="subject-badge">${done}/${total} mastered</div>
+    </div>
+    <div class="mini-prog-wrap">
+      <div class="mini-prog-label"><span>${pct}% done</span><span>${total-done} remaining</span></div>
+      <div class="mini-prog-bg"><div class="mini-prog-fill" style="width:${pct}%;background:${subj.color}"></div></div>
+    </div>`;
+  subj.sections.forEach((sec,si)=>{
+    let secHtml = `<div class="part-block">
+      <div class="part-label" style="background:${sec.color}">
+        <span>${sec.label}</span>
+        <span class="part-count">${sec.questions.filter((_,qi)=>isChecked(subj.id,si,qi)).length}/${sec.questions.length}</span>
+      </div>`;
+    sec.questions.forEach((q,qi)=>{
+      const checked = isChecked(subj.id,si,qi);
+      if(filterMode==="done" && !checked) return;
+      if(filterMode==="unread" && checked) return;
+      secHtml += renderQuestionRow(subj,si,qi,q,checked);
     });
+    secHtml += `</div>`;
+    html += secHtml;
   });
-  return { total, done };
-}
-
-function countAll() {
-  let total = 0, done = 0;
-  SUBJECTS.forEach(s => {
-    const c = countSubject(s);
-    total += c.total; done += c.done;
-  });
-  return { total, done };
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-let activeSubject = 0;
-let filterMode = "all"; // all | unread | done
-
-function renderTabs() {
-  const tabsEl = document.getElementById("tabs");
-  tabsEl.innerHTML = "";
-  SUBJECTS.forEach((s, i) => {
-    const { total, done } = countSubject(s);
-    const pct = total ? Math.round(done/total*100) : 0;
-    const tab = document.createElement("div");
-    tab.className = "tab" + (i === activeSubject ? " active" : "");
-    tab.innerHTML = `${s.code} <span style="opacity:0.65;font-size:0.68rem;margin-left:4px">${pct}%</span>`;
-    tab.onclick = () => { activeSubject = i; filterMode = "all"; renderAll(); };
-    tabsEl.appendChild(tab);
-  });
-}
-
-function renderOverall() {
-  const { total, done } = countAll();
-  document.getElementById("overall-count").textContent = `${done} / ${total}`;
-  const pct = total ? done/total*100 : 0;
-  document.getElementById("overall-bar").style.width = pct + "%";
-}
-
-function marksClass(m) {
-  if (m === "2M") return "marks-badge two";
-  if (m === "Lab") return "marks-badge lab";
-  return "marks-badge";
-}
-
-function renderSection(subj, sec, secIdx) {
-  const questions = sec.questions.filter((q, qi) => {
-    const checked = isChecked(subj.id, secIdx, qi);
-    if (filterMode === "done") return checked;
-    if (filterMode === "unread") return !checked;
-    return true;
-  });
-
-  if (questions.length === 0) return "";
-
-  let html = `<div class="part-block">
-    <div class="part-label" style="background:${sec.color}">
-      <span>${sec.label}</span>
-      <span class="part-count">${countSecDone(subj.id, secIdx, sec.questions)} / ${sec.questions.length}</span>
-    </div>`;
-
-  sec.questions.forEach((q, qi) => {
-    const checked = isChecked(subj.id, secIdx, qi);
-    if (filterMode === "done" && !checked) return;
-    if (filterMode === "unread" && checked) return;
-    html += `
-    <div class="q-row${checked ? " done" : ""}" onclick="handleCheck('${subj.id}',${secIdx},${qi})">
-      <div class="cb-wrap">
-        <div class="cb${checked ? " checked" : ""}">
-          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-            <path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </div>
-      <div class="q-content">
-        <div class="q-text">${q[2]}</div>
-        <div class="q-meta">
-          <span class="q-num">Q${q[0]}</span>
-          <span class="${marksClass(q[1])}">${q[1]}</span>
-        </div>
-      </div>
-    </div>`;
-  });
-
   html += `</div>`;
   return html;
 }
 
-function countSecDone(subjId, secIdx, questions) {
-  return questions.filter((q, qi) => isChecked(subjId, secIdx, qi)).length;
-}
-
-function renderSubject(subj) {
-  const { total, done } = countSubject(subj);
-  const pct = total ? Math.round(done/total*100) : 0;
-
-  let html = `
-  <div style="margin-bottom:16px">
-    <div class="subject-header-bar" style="background:${subj.color}">
-      <div>
-        <div class="subject-name">${subj.name}</div>
-        <div class="subject-meta">${subj.code} &nbsp;|&nbsp; Exam: ${subj.date}</div>
-      </div>
-      <div class="subject-badge">${done}/${total} read</div>
-    </div>
-    <div style="background:rgba(0,0,0,0.06);padding:10px 18px;border-radius:0;border:1px solid ${subj.color}20;border-top:none;">
-      <div class="mini-prog-label"><span>${pct}% complete</span><span>${total-done} remaining</span></div>
-      <div class="mini-prog-bg">
-        <div class="mini-prog-fill" style="width:${pct}%;background:${subj.color}"></div>
-      </div>
-    </div>
-  </div>`;
-
-  subj.sections.forEach((sec, si) => {
-    html += renderSection(subj, sec, si);
-  });
-
-  return html;
-}
-
-function renderMain() {
-  const subj = SUBJECTS[activeSubject];
-  const { total, done } = countSubject(subj);
-  const main = document.getElementById("main");
-
-  let html = `
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Questions</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-label">Read ✓</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${total-done}</div><div class="stat-label">Remaining</div></div>
-  </div>
-  <div class="filter-bar">
-    <button class="filter-btn${filterMode==='all'?' active':''}" onclick="setFilter('all')">All (${total})</button>
-    <button class="filter-btn${filterMode==='unread'?' active':''}" onclick="setFilter('unread')">Unread (${total-done})</button>
-    <button class="filter-btn${filterMode==='done'?' active':''}" onclick="setFilter('done')">Read (${done})</button>
-    <button class="reset-btn" onclick="resetSubject()">Reset Subject</button>
-  </div>`;
-
-  html += renderSubject(subj);
-  main.innerHTML = html;
-}
-
-function renderAll() {
+function renderAll(){
   renderTabs();
   renderOverall();
-  renderMain();
+  const subj = SUBJECTS[activeSubject];
+  const {total,done} = countSubject(subj);
+  let html = `<div class="stats-row">
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Qs</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#16a34a">${done}</div><div class="stat-label">Mastered</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#dc2626">${total-done}</div><div class="stat-label">Remaining</div></div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn${filterMode==='all'?' active':''}" onclick="setFilter('all')">All</button>
+    <button class="filter-btn${filterMode==='unread'?' active':''}" onclick="setFilter('unread')">Unread</button>
+    <button class="filter-btn${filterMode==='done'?' active':''}" onclick="setFilter('done')">Mastered</button>
+    <button class="reset-btn" onclick="resetSubject()">🔄 Reset</button>
+  </div>`;
+  html += renderSubject(subj);
+  document.getElementById("main").innerHTML = html;
 }
 
-// ── HANDLERS ──────────────────────────────────────────────────────────────────
-window.handleCheck = function(subjId, secIdx, qIdx) {
-  const subj = SUBJECTS.find(s => s.id === subjId);
-  const wasDone = isChecked(subjId, secIdx, qIdx);
-  toggle(subjId, secIdx, qIdx);
+function renderTabs(){
+  document.getElementById("tabs").innerHTML = SUBJECTS.map((s,i)=>{
+    const {total,done} = countSubject(s);
+    const pct = total ? Math.round(done/total*100) : 0;
+    return `<div class="tab${i===activeSubject?' active':''}" onclick="switchSubject(${i})">${s.code} <span style="font-size:.65rem;opacity:.8">${pct}%</span></div>`;
+  }).join('');
+}
+
+function renderOverall(){
+  const {total,done} = countAll();
+  document.getElementById("overallNum").textContent = `${done}/${total}`;
+  document.getElementById("overallBar").style.width = (total ? done/total*100 : 0)+"%";
+}
+
+// ===================== ACTIONS =====================
+window.switchSubject = (i) => { activeSubject=i; filterMode="all"; renderAll(); };
+window.setFilter = (m) => { filterMode=m; renderAll(); };
+window.onCheck = (subjId,secIdx,qIdx) => {
+  toggleCheck(subjId,secIdx,qIdx);
   renderAll();
-  // check if subject completed
-  if (!wasDone) {
-    const { total, done } = countSubject(subj);
-    if (total === done) {
-      document.getElementById("celebrate-title").textContent = subj.code + " Complete!";
-      document.getElementById("celebrate-sub").textContent = `All ${total} questions read for ${subj.name}`;
-      document.getElementById("celebrate").classList.add("show");
+  const subj = SUBJECTS.find(s=>s.id===subjId);
+  const {total,done} = countSubject(subj);
+  if(total===done) setTimeout(()=>alert(`🎉 All ${subj.code} questions mastered!`),100);
+};
+window.resetSubject = () => {
+  const subj = SUBJECTS[activeSubject];
+  if(!confirm(`Reset ALL progress & notes for ${subj.code}?`)) return;
+  subj.sections.forEach((sec,si)=>{ sec.questions.forEach((_,qi)=>{ 
+    const k=noteKey(subj.id,si,qi);
+    delete checkState[k];
+    delete noteCache[k];
+    dbDel("notes",k);
+  }); });
+  dbSet("checks","all",checkState);
+  renderAll();
+};
+
+// ===================== MODAL =====================
+let modalCtx = null;
+let pendingFiles = [];
+
+function closeModal(){
+  document.getElementById("noteModal").classList.remove("active");
+  document.getElementById("modalBody").innerHTML="";
+  document.getElementById("modalFooter").innerHTML="";
+  modalCtx=null; pendingFiles=[];
+}
+document.getElementById("noteModal").onclick = e => { if(e.target===document.getElementById("noteModal")) closeModal(); };
+
+async function openWrite(subjId,secIdx,qIdx){
+  const subj = SUBJECTS.find(s=>s.id===subjId);
+  const q = subj.sections[secIdx].questions[qIdx];
+  const note = await getNote(subjId,secIdx,qIdx);
+  modalCtx = {subjId,secIdx,qIdx,note};
+  pendingFiles = [];
+
+  document.getElementById("modalTitle").textContent = "✏️ Write Notes";
+  document.getElementById("modalQText").textContent = `Q${q[0]} [${q[1]}] — ${q[2]}`;
+
+  // existing files
+  let existingHtml = '';
+  if(note.files?.length){
+    existingHtml = `<div style="margin-top:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">📎 Existing Attachments</div>
+      <div class="preview-grid">${note.files.map((f,idx)=>`
+        <div class="preview-item">
+          ${f.type.startsWith('image/')?`<img class="preview-img" src="${f.dataURL}" onclick="showLightbox('${esc(f.dataURL)}')" alt=""/>`
+          :`<div class="preview-file"><span class="preview-file-icon">📄</span>${esc(f.name)}</div>`}
+          <button class="remove-preview" onclick="removeExistingFile(${idx})" title="Remove">✕</button>
+        </div>`).join('')}
+      </div></div>`;
+  }
+
+  document.getElementById("modalBody").innerHTML = `
+    <textarea class="write-area" id="noteTA" placeholder="Write your explanation, key points, formulas, hints...">${esc(note.text||"")}</textarea>
+    <div class="file-upload-zone" onclick="document.getElementById('fileInp').click()">
+      <div style="font-size:1.5rem">📎</div>
+      <div style="font-size:.82rem;font-weight:700;color:#475569;margin-top:6px;">Attach Images or Files</div>
+      <div class="file-upload-text">Click to browse — images, PDFs, any file type</div>
+      <input type="file" id="fileInp" multiple accept="*/*">
+    </div>
+    <div class="preview-grid" id="newFilesPreview"></div>
+    ${existingHtml}`;
+
+  document.getElementById("modalFooter").innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveNote()">💾 Save Notes</button>`;
+
+  document.getElementById("noteModal").classList.add("active");
+
+  document.getElementById("fileInp").onchange = async e => {
+    pendingFiles = [];
+    document.getElementById("newFilesPreview").innerHTML = "";
+    for(const file of Array.from(e.target.files)){
+      const dataURL = await readFile(file);
+      pendingFiles.push({ name:file.name, type:file.type, dataURL });
+      const item = document.createElement("div");
+      item.className = "preview-item";
+      item.innerHTML = file.type.startsWith('image/')
+        ? `<img class="preview-img" src="${dataURL}" onclick="showLightbox('${dataURL.replace(/'/g,"\\'")}')" />`
+        : `<div class="preview-file"><span class="preview-file-icon">📄</span>${esc(file.name)}</div>`;
+      document.getElementById("newFilesPreview").appendChild(item);
+    }
+  };
+}
+
+window.removeExistingFile = (idx) => {
+  if(!modalCtx) return;
+  const note = modalCtx.note;
+  note.files.splice(idx,1);
+  openWrite(modalCtx.subjId,modalCtx.secIdx,modalCtx.qIdx);
+};
+
+window.saveNote = async () => {
+  if(!modalCtx) return;
+  const {subjId,secIdx,qIdx,note} = modalCtx;
+  const text = document.getElementById("noteTA").value;
+  const files = [...(note.files||[]), ...pendingFiles];
+  await setNote(subjId,secIdx,qIdx,text,files);
+  closeModal();
+  renderAll();
+  // show toast
+  showToast("✨ Notes saved!");
+};
+
+async function openRead(subjId,secIdx,qIdx){
+  const subj = SUBJECTS.find(s=>s.id===subjId);
+  const q = subj.sections[secIdx].questions[qIdx];
+  const note = await getNote(subjId,secIdx,qIdx);
+
+  document.getElementById("modalTitle").textContent = "📖 Read Notes";
+  document.getElementById("modalQText").textContent = `Q${q[0]} [${q[1]}] — ${q[2]}`;
+
+  const hasText = note.text?.trim();
+  const hasFiles = note.files?.length > 0;
+
+  let body = '';
+  if(!hasText && !hasFiles){
+    body = `<div class="read-empty">📭 No notes yet for this question.<br><span style="font-size:.75rem;">Tap ✏️ Write to add your notes!</span></div>`;
+  } else {
+    if(hasText){
+      body += `<div style="margin-bottom:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">✍️ Your Notes</div>
+        <div class="read-notes-text">${esc(note.text)}</div></div>`;
+    }
+    if(hasFiles){
+      body += `<div class="read-files-label">📎 Attachments (${note.files.length})</div><div class="preview-grid">`;
+      for(const f of note.files){
+        if(f.type.startsWith('image/')){
+          body += `<div class="preview-item"><img class="read-img" src="${f.dataURL}" onclick="showLightbox('${f.dataURL.replace(/'/g,"\\'")}')" title="Click to zoom" /></div>`;
+        } else {
+          body += `<div class="preview-item"><div class="preview-file"><span class="preview-file-icon">📄</span><a class="read-file-link" href="${f.dataURL}" download="${esc(f.name)}" target="_blank">⬇ ${esc(f.name)}</a></div></div>`;
+        }
+      }
+      body += `</div>`;
     }
   }
-};
 
-window.setFilter = function(mode) {
-  filterMode = mode;
-  renderMain();
-};
+  document.getElementById("modalBody").innerHTML = body;
+  document.getElementById("modalFooter").innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+    <button class="btn btn-edit" onclick="closeModal();openWrite('${subjId}',${secIdx},${qIdx})">✏️ Edit Notes</button>`;
+  document.getElementById("noteModal").classList.add("active");
+}
 
-window.resetSubject = function() {
-  const subj = SUBJECTS[activeSubject];
-  if (!confirm(`Reset all checkboxes for ${subj.code}? This cannot be undone.`)) return;
-  subj.sections.forEach((sec, si) => {
-    sec.questions.forEach((q, qi) => {
-      delete state[qKey(subj.id, si, qi)];
-    });
-  });
-  saveState();
-  renderAll();
-};
+// expose
+window.openWrite = openWrite;
+window.openRead = openRead;
+window.closeModal = closeModal;
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-renderAll();
+// ===================== LIGHTBOX =====================
+window.showLightbox = (src) => {
+  document.getElementById("lightboxImg").src = src;
+  document.getElementById("lightbox").classList.add("active");
+};
+window.closeLightbox = () => {
+  document.getElementById("lightbox").classList.remove("active");
+  document.getElementById("lightboxImg").src = "";
+};
+document.getElementById("lightbox").onclick = e => { if(e.target===document.getElementById("lightbox")) closeLightbox(); };
+
+// ===================== UTILS =====================
+function readFile(file){
+  return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+}
+
+function showToast(msg){
+  const t = document.createElement("div");
+  t.textContent = msg;
+  Object.assign(t.style,{position:"fixed",bottom:"24px",left:"50%",transform:"translateX(-50%)",
+    background:"#1e2a3a",color:"#fff",padding:"10px 22px",borderRadius:"40px",
+    fontSize:".82rem",fontWeight:"700",zIndex:"9999",boxShadow:"0 4px 20px rgba(0,0,0,.3)",
+    transition:"opacity .4s"});
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; setTimeout(()=>t.remove(),400); }, 2000);
+}
+
+// ===================== INIT =====================
+openDB().then(()=>loadAll()).then(()=>renderAll());
 </script>
 </body>
 </html>
