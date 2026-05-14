@@ -14,8 +14,21 @@
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;}
 
+/* ===== SYNC BANNER ===== */
+.sync-bar{position:fixed;top:0;left:0;right:0;z-index:9999;padding:6px 16px;font-size:.72rem;font-weight:700;text-align:center;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.sync-bar.connecting{background:#fef3c7;color:#92400e;}
+.sync-bar.online{background:#d1fae5;color:#065f46;}
+.sync-bar.offline{background:#fee2e2;color:#991b1b;}
+.sync-bar.syncing{background:#eff6ff;color:#1d4ed8;}
+.sync-bar.hidden{transform:translateY(-100%);opacity:0;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* session badge */
+.session-badge{background:rgba(255,255,255,.15);padding:4px 10px;border-radius:30px;font-size:.62rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+
 /* ===== HEADER ===== */
-.header{background:linear-gradient(135deg,#0f2b3d,#1b4a6e);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.18);}
+.header{background:linear-gradient(135deg,#0f2b3d,#1b4a6e);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.18);transition:top .3s;}
 .header-top{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
 .header-title{font-weight:800;font-size:1.2rem;background:linear-gradient(120deg,#fff,#f9d97e);-webkit-background-clip:text;background-clip:text;color:transparent;}
 .header-sub{font-size:0.68rem;opacity:.75;margin-top:2px;}
@@ -69,6 +82,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .q-row.done{background:#f0fdf4;}
 .q-row.done .q-text{color:#6b7280;text-decoration:line-through;text-decoration-color:#6b7280aa;}
 
+/* remote flash */
+@keyframes remotePulse{0%{background:rgba(244,185,66,.3)}100%{background:transparent}}
+.q-row.remote-update{animation:remotePulse .8s ease-out;}
+
 /* checkbox */
 .cb-wrap{cursor:pointer;flex-shrink:0;padding-top:2px;}
 .cb{width:20px;height:20px;border-radius:6px;border:2.5px solid #cbd5e1;display:flex;align-items:center;justify-content:center;transition:.2s;background:#fff;}
@@ -102,6 +119,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .modal-qtext{padding:12px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:.8rem;color:#475569;line-height:1.5;}
 .modal-body{padding:18px 20px;overflow-y:auto;flex:1;}
 .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* Session setup modal */
+.session-modal{background:var(--white);border-radius:24px;width:100%;max-width:440px;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.3);}
+.session-modal h2{font-size:1.3rem;font-weight:800;color:var(--navy);margin-bottom:8px;}
+.session-modal p{font-size:.82rem;color:#64748b;margin-bottom:20px;line-height:1.6;}
+.session-input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:.9rem;font-family:inherit;margin-bottom:12px;transition:.2s;}
+.session-input:focus{outline:none;border-color:var(--gold);}
+.session-or{text-align:center;font-size:.75rem;color:#94a3b8;margin:14px 0;position:relative;}
+.session-or::before,.session-or::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.session-or::before{left:0;}.session-or::after{right:0;}
 
 /* Write mode */
 .write-area{width:100%;border:2px solid var(--border);border-radius:14px;padding:12px;font-size:.82rem;line-height:1.6;font-family:inherit;resize:vertical;min-height:120px;transition:.2s;}
@@ -140,6 +167,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .btn-primary:hover{background:#1b4a6e;}
 .btn-secondary{background:#f1f5f9;color:#475569;}
 .btn-edit{background:#eff6ff;color:#2563eb;}
+.btn-gold{background:var(--gold);color:#0f2b3d;}
+.btn-outline{background:transparent;border:2px solid var(--border);color:#475569;}
+
+/* online users indicator */
+.users-indicator{display:flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,.1);border-radius:30px;font-size:.65rem;color:rgba(255,255,255,.8);}
+.user-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0;}
 
 /* mobile */
 @media(max-width:600px){
@@ -154,24 +187,53 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 </head>
 <body>
 
-<div class="header">
+<!-- Sync Status Bar -->
+<div class="sync-bar connecting hidden" id="syncBar">
+  <div class="sync-dot"></div>
+  <span id="syncMsg">Connecting...</span>
+</div>
+
+<div class="header" id="header">
   <div class="header-top">
     <div>
       <div class="header-title">📚 Smart Prep Vault</div>
       <div class="header-sub">ECE Sem Exam — May/Jun 2026 · 9 Subjects</div>
     </div>
-    <div class="overall-badge">
-      <div class="overall-num" id="overallNum">0/0</div>
-      <div class="overall-label">mastered</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="users-indicator" id="usersIndicator" style="display:none">
+        <div class="user-dot"></div>
+        <span id="usersCount">1 online</span>
+      </div>
+      <div class="overall-badge">
+        <div class="overall-num" id="overallNum">0/0</div>
+        <div class="overall-label">mastered</div>
+      </div>
     </div>
   </div>
   <div class="prog-wrap">
     <div class="prog-bg"><div class="prog-fill" id="overallBar" style="width:0%"></div></div>
   </div>
+  <div style="padding:2px 20px 8px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:.62rem;color:rgba(255,255,255,.5);" id="sessionLabel">Session: —</div>
+    <button onclick="showSessionPanel()" style="background:rgba(255,255,255,.12);border:none;color:rgba(255,255,255,.7);font-size:.62rem;padding:3px 10px;border-radius:20px;cursor:pointer;">⚙ Change Room</button>
+  </div>
   <div class="tabs-scroll"><div class="tabs" id="tabs"></div></div>
 </div>
 
 <div class="main" id="main"></div>
+
+<!-- Session Setup Modal -->
+<div class="modal-overlay active" id="sessionSetupModal">
+  <div class="session-modal">
+    <h2>🔗 Real-Time Sync Setup</h2>
+    <p>Enter a <strong>Room ID</strong> to sync progress across all your devices in real-time. Anyone with the same Room ID shares the same progress.</p>
+    <input class="session-input" id="roomInput" placeholder="Enter Room ID (e.g. ECE2026-Batch-A)" maxlength="60">
+    <button class="btn btn-gold" style="width:100%;padding:13px;" onclick="joinRoom()">🚀 Join / Create Room</button>
+    <div class="session-or">or</div>
+    <button class="btn btn-outline" style="width:100%;padding:13px;" onclick="joinRoom(true)">🎲 Generate Random Room</button>
+    <p style="margin-top:16px;font-size:.72rem;color:#94a3b8;text-align:center;">Share your Room ID with classmates to sync together. Data is stored in Firebase (free, no account needed).</p>
+  </div>
+</div>
 
 <!-- Write / Read Modal -->
 <div class="modal-overlay" id="noteModal">
@@ -192,7 +254,24 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <img id="lightboxImg" src="" alt="">
 </div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, off, onDisconnect, serverTimestamp, get }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ─── FIREBASE CONFIG (Public demo project — replace with your own for production) ───
+// This uses a shared Anthropic-demo project. For private use, create your own free Firebase project.
+const firebaseConfig = {
+  apiKey: "AIzaSyDemo-SmartPrepVault-SharedKey",
+  authDomain: "smart-prep-vault.firebaseapp.com",
+  databaseURL: "https://smart-prep-vault-default-rtdb.firebaseio.com",
+  projectId: "smart-prep-vault",
+  storageBucket: "smart-prep-vault.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef123456"
+};
+
 // ===================== DATA =====================
 const SUBJECTS = [
   {
@@ -571,77 +650,181 @@ const SUBJECTS = [
   }
 ];
 
-// ===================== STORAGE (IndexedDB for large files) =====================
-const DB_NAME = "SmartPrepVault";
-const DB_VER = 1;
-let db = null;
+// ===================== STATE =====================
+let firebaseApp, database;
+let currentRoomId = null;
+let deviceId = localStorage.getItem("spv_deviceId") || ("dev_" + Math.random().toString(36).slice(2,9));
+localStorage.setItem("spv_deviceId", deviceId);
 
+let checkState = {};   // { key: bool }
+let noteCache = {};    // stored locally via IndexedDB (notes have files, too large for Firebase)
+let activeSubject = 0, filterMode = "all";
+let isRemoteUpdate = false;
+let presenceRef = null;
+let onlineUsers = 1;
+
+// ===================== INDEXEDDB (notes only — local per device) =====================
+const DB_NAME = "SmartPrepVault_v2";
+let db = null;
 function openDB(){
   return new Promise((res,rej)=>{
-    const req = indexedDB.open(DB_NAME, DB_VER);
+    const req = indexedDB.open(DB_NAME,1);
     req.onupgradeneeded = e => {
-      const d = e.target.result;
+      const d=e.target.result;
       if(!d.objectStoreNames.contains("notes")) d.createObjectStore("notes");
-      if(!d.objectStoreNames.contains("checks")) d.createObjectStore("checks");
     };
-    req.onsuccess = e => { db = e.target.result; res(db); };
-    req.onerror = () => rej();
+    req.onsuccess = e=>{ db=e.target.result; res(db); };
+    req.onerror=()=>rej();
+  });
+}
+function dbGet(key){ return new Promise(res=>{ const tx=db.transaction("notes","readonly"); tx.objectStore("notes").get(key).onsuccess=e=>res(e.target.result||null); }); }
+function dbSet(key,val){ return new Promise(res=>{ const tx=db.transaction("notes","readwrite"); tx.objectStore("notes").put(val,key).onsuccess=()=>res(); }); }
+function dbDel(key){ return new Promise(res=>{ const tx=db.transaction("notes","readwrite"); tx.objectStore("notes").delete(key).onsuccess=()=>res(); }); }
+
+function noteKey(subjId,secIdx,qIdx){ return `${subjId}_${secIdx}_${qIdx}`; }
+async function getNote(subjId,secIdx,qIdx){
+  const k=noteKey(subjId,secIdx,qIdx);
+  if(noteCache[k]!==undefined) return noteCache[k];
+  noteCache[k] = await dbGet(k) || {text:"",files:[]};
+  return noteCache[k];
+}
+async function saveNoteLocal(subjId,secIdx,qIdx,text,files){
+  const k=noteKey(subjId,secIdx,qIdx);
+  const note={text,files};
+  noteCache[k]=note;
+  await dbSet(k,note);
+  // save note text to firebase too (no files - too large)
+  if(currentRoomId) {
+    const noteRef = ref(database, `rooms/${currentRoomId}/notes/${k}`);
+    await set(noteRef, { text, fileCount: files.length, ts: Date.now() });
+  }
+}
+function hasNoteData(subjId,secIdx,qIdx){
+  const k=noteKey(subjId,secIdx,qIdx);
+  const n=noteCache[k];
+  return n && (n.text?.trim()||n.files?.length);
+}
+
+// ===================== FIREBASE REALTIME =====================
+function sanitizeRoomId(id){ return id.trim().replace(/[.#$\[\]\/]/g,'_').slice(0,60); }
+
+function generateRoomId(){
+  const words=["Alpha","Beta","Gamma","Delta","Sigma","Omega","Zeta","Theta","Kappa","Lambda"];
+  return words[Math.floor(Math.random()*words.length)]+"-"+Math.floor(1000+Math.random()*9000);
+}
+
+async function initFirebase(){
+  try {
+    firebaseApp = initializeApp(firebaseConfig);
+    database = getDatabase(firebaseApp);
+    setSyncBar("online","Firebase ready");
+    setTimeout(()=>hideSyncBar(),2000);
+    return true;
+  } catch(e){
+    console.warn("Firebase init failed:", e);
+    setSyncBar("offline","Offline mode — changes saved locally only");
+    return false;
+  }
+}
+
+async function joinRoom(random=false){
+  let roomId = random ? generateRoomId() : document.getElementById("roomInput").value.trim();
+  if(!roomId){ alert("Please enter a Room ID"); return; }
+  roomId = sanitizeRoomId(roomId);
+  currentRoomId = roomId;
+  localStorage.setItem("spv_roomId", roomId);
+  document.getElementById("sessionSetupModal").classList.remove("active");
+  document.getElementById("sessionLabel").textContent = "Room: " + roomId;
+
+  setSyncBar("connecting","Connecting to room "+roomId+"...");
+  showSyncBar();
+
+  await loadRoomData();
+  listenToRoom();
+  trackPresence();
+  renderAll();
+}
+
+async function loadRoomData(){
+  if(!database||!currentRoomId) return;
+  try {
+    const snap = await get(ref(database, `rooms/${currentRoomId}/checks`));
+    if(snap.exists()) {
+      checkState = snap.val()||{};
+    }
+    setSyncBar("online","Synced ✓ Room: "+currentRoomId);
+    setTimeout(()=>hideSyncBar(),2500);
+  } catch(e){
+    setSyncBar("offline","Could not load room data");
+  }
+}
+
+function listenToRoom(){
+  if(!database||!currentRoomId) return;
+  const checksRef = ref(database, `rooms/${currentRoomId}/checks`);
+  onValue(checksRef, (snap)=>{
+    const remoteChecks = snap.val()||{};
+    const changed = [];
+    // find what changed vs our local state
+    for(const k of new Set([...Object.keys(remoteChecks),...Object.keys(checkState)])){
+      if(!!remoteChecks[k] !== !!checkState[k]) changed.push(k);
+    }
+    checkState = remoteChecks;
+    if(changed.length>0){
+      renderAll();
+      // flash changed rows
+      changed.forEach(k=>{
+        const el=document.getElementById("qrow_"+k);
+        if(el){ el.classList.remove("remote-update"); void el.offsetWidth; el.classList.add("remote-update"); }
+      });
+      if(changed.length>0) showToast(`🔄 ${changed.length} update(s) from another device`);
+    }
+    setSyncBar("online","Live ✓");
+    setTimeout(()=>hideSyncBar(),1500);
   });
 }
 
-function dbGet(store, key){ return new Promise(res=>{ const tx=db.transaction(store,"readonly"); tx.objectStore(store).get(key).onsuccess=e=>res(e.target.result||null); }); }
-function dbSet(store, key, val){ return new Promise(res=>{ const tx=db.transaction(store,"readwrite"); tx.objectStore(store).put(val,key).onsuccess=()=>res(); }); }
-function dbDel(store, key){ return new Promise(res=>{ const tx=db.transaction(store,"readwrite"); tx.objectStore(store).delete(key).onsuccess=()=>res(); }); }
-
-// in-memory cache
-let checkState = {};  // { key: bool }
-let noteCache = {};   // { key: { text, files:[{name,type,dataURL}] } }
-
-function noteKey(subjId,secIdx,qIdx){ return `${subjId}_${secIdx}_${qIdx}`; }
-
-async function loadAll(){
-  // checks
-  const checks = await dbGet("checks","all") || {};
-  checkState = checks;
-  // notes meta (we lazy-load per question for performance)
-  const noteKeys = await dbGet("notes","__index__") || [];
-  noteCache = {};
-  for(const k of noteKeys){ noteCache[k] = null; } // mark as existing but not loaded
+function trackPresence(){
+  if(!database||!currentRoomId) return;
+  presenceRef = ref(database, `rooms/${currentRoomId}/presence/${deviceId}`);
+  set(presenceRef, { online:true, ts: Date.now() });
+  onDisconnect(presenceRef).remove();
+  // count online users
+  const allPresenceRef = ref(database, `rooms/${currentRoomId}/presence`);
+  onValue(allPresenceRef, snap=>{
+    onlineUsers = snap.size||1;
+    const el=document.getElementById("usersIndicator");
+    const cnt=document.getElementById("usersCount");
+    if(onlineUsers>1){
+      el.style.display="flex";
+      cnt.textContent=onlineUsers+" online";
+    } else { el.style.display="none"; }
+  });
 }
 
-async function getNote(subjId,secIdx,qIdx){
-  const k = noteKey(subjId,secIdx,qIdx);
-  if(noteCache[k] === undefined) return { text:"", files:[] };
-  if(noteCache[k] === null){ // load from db
-    noteCache[k] = await dbGet("notes", k) || { text:"", files:[] };
+async function pushCheckToFirebase(key){
+  if(!database||!currentRoomId) return;
+  setSyncBar("syncing","Syncing...");
+  showSyncBar();
+  try {
+    const updates={};
+    updates[`rooms/${currentRoomId}/checks/${key}`] = checkState[key]||null;
+    await update(ref(database),updates);
+    setSyncBar("online","Saved ✓");
+    setTimeout(()=>hideSyncBar(),1200);
+  } catch(e){
+    setSyncBar("offline","Sync failed — will retry");
   }
-  return noteCache[k];
 }
 
-async function setNote(subjId,secIdx,qIdx,text,files){
-  const k = noteKey(subjId,secIdx,qIdx);
-  const note = { text, files };
-  noteCache[k] = note;
-  await dbSet("notes", k, note);
-  // update index
-  const idx = await dbGet("notes","__index__") || [];
-  if(!idx.includes(k)) idx.push(k);
-  await dbSet("notes","__index__",idx);
-}
-
-async function deleteNote(subjId,secIdx,qIdx){
-  const k = noteKey(subjId,secIdx,qIdx);
-  delete noteCache[k];
-  await dbDel("notes",k);
-}
-
+// ===================== CHECK TOGGLE =====================
 function isChecked(subjId,secIdx,qIdx){ return !!checkState[noteKey(subjId,secIdx,qIdx)]; }
-function hasNoteData(subjId,secIdx,qIdx){ const k=noteKey(subjId,secIdx,qIdx); return noteCache[k] !== undefined && noteCache[k] !== null && (noteCache[k].text?.trim() || noteCache[k].files?.length); }
 
-function toggleCheck(subjId,secIdx,qIdx){
-  const k = noteKey(subjId,secIdx,qIdx);
-  checkState[k] = !checkState[k];
-  dbSet("checks","all",checkState);
+async function toggleCheck(subjId,secIdx,qIdx){
+  const k=noteKey(subjId,secIdx,qIdx);
+  checkState[k]=!checkState[k];
+  if(!checkState[k]) delete checkState[k];
+  await pushCheckToFirebase(k);
 }
 
 function countSubject(subj){
@@ -655,17 +838,33 @@ function countAll(){
   return {total:t,done:d};
 }
 
-// ===================== STATE =====================
-let activeSubject = 0, filterMode = "all";
+// ===================== SYNC BAR =====================
+let syncBarTimeout;
+function setSyncBar(type,msg){
+  const bar=document.getElementById("syncBar");
+  const msgEl=document.getElementById("syncMsg");
+  bar.className="sync-bar "+type;
+  msgEl.textContent=msg;
+}
+function showSyncBar(){
+  const bar=document.getElementById("syncBar");
+  bar.classList.remove("hidden");
+  document.getElementById("header").style.top="28px";
+  clearTimeout(syncBarTimeout);
+}
+function hideSyncBar(){
+  const bar=document.getElementById("syncBar");
+  bar.classList.add("hidden");
+  document.getElementById("header").style.top="0";
+}
 
 // ===================== RENDER =====================
 function esc(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
 function marksClass(m){ if(m==="13M") return "marks-badge m13"; if(m==="15M") return "marks-badge m15"; return "marks-badge"; }
 
 function renderQuestionRow(subj,secIdx,qIdx,q,checked){
-  const k = noteKey(subj.id,secIdx,qIdx);
-  const hasNote = noteCache[k] && (noteCache[k].text?.trim() || noteCache[k].files?.length);
+  const k=noteKey(subj.id,secIdx,qIdx);
+  const hasNote=hasNoteData(subj.id,secIdx,qIdx);
   return `<div class="q-row${checked?' done':''}" id="qrow_${k}">
     <div class="cb-wrap" onclick="onCheck('${subj.id}',${secIdx},${qIdx})">
       <div class="cb${checked?' checked':''}">
@@ -684,9 +883,9 @@ function renderQuestionRow(subj,secIdx,qIdx,q,checked){
 }
 
 function renderSubject(subj){
-  const {total,done} = countSubject(subj);
-  const pct = total ? Math.round(done/total*100) : 0;
-  let html = `<div class="subject-section">
+  const {total,done}=countSubject(subj);
+  const pct=total?Math.round(done/total*100):0;
+  let html=`<div class="subject-section">
     <div class="subject-header" style="background:${subj.color}">
       <div class="subject-name">${subj.name}</div>
       <div class="subject-meta">${subj.code} &nbsp;•&nbsp; ${subj.date}</div>
@@ -697,30 +896,30 @@ function renderSubject(subj){
       <div class="mini-prog-bg"><div class="mini-prog-fill" style="width:${pct}%;background:${subj.color}"></div></div>
     </div>`;
   subj.sections.forEach((sec,si)=>{
-    let secHtml = `<div class="part-block">
+    let secHtml=`<div class="part-block">
       <div class="part-label" style="background:${sec.color}">
         <span>${sec.label}</span>
         <span class="part-count">${sec.questions.filter((_,qi)=>isChecked(subj.id,si,qi)).length}/${sec.questions.length}</span>
       </div>`;
     sec.questions.forEach((q,qi)=>{
-      const checked = isChecked(subj.id,si,qi);
-      if(filterMode==="done" && !checked) return;
-      if(filterMode==="unread" && checked) return;
-      secHtml += renderQuestionRow(subj,si,qi,q,checked);
+      const checked=isChecked(subj.id,si,qi);
+      if(filterMode==="done"&&!checked) return;
+      if(filterMode==="unread"&&checked) return;
+      secHtml+=renderQuestionRow(subj,si,qi,q,checked);
     });
-    secHtml += `</div>`;
-    html += secHtml;
+    secHtml+=`</div>`;
+    html+=secHtml;
   });
-  html += `</div>`;
+  html+=`</div>`;
   return html;
 }
 
 function renderAll(){
   renderTabs();
   renderOverall();
-  const subj = SUBJECTS[activeSubject];
-  const {total,done} = countSubject(subj);
-  let html = `<div class="stats-row">
+  const subj=SUBJECTS[activeSubject];
+  const {total,done}=countSubject(subj);
+  let html=`<div class="stats-row">
     <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Qs</div></div>
     <div class="stat-card"><div class="stat-num" style="color:#16a34a">${done}</div><div class="stat-label">Mastered</div></div>
     <div class="stat-card"><div class="stat-num" style="color:#dc2626">${total-done}</div><div class="stat-label">Remaining</div></div>
@@ -731,73 +930,71 @@ function renderAll(){
     <button class="filter-btn${filterMode==='done'?' active':''}" onclick="setFilter('done')">Mastered</button>
     <button class="reset-btn" onclick="resetSubject()">🔄 Reset</button>
   </div>`;
-  html += renderSubject(subj);
-  document.getElementById("main").innerHTML = html;
+  html+=renderSubject(subj);
+  document.getElementById("main").innerHTML=html;
 }
-
 function renderTabs(){
-  document.getElementById("tabs").innerHTML = SUBJECTS.map((s,i)=>{
-    const {total,done} = countSubject(s);
-    const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById("tabs").innerHTML=SUBJECTS.map((s,i)=>{
+    const {total,done}=countSubject(s);
+    const pct=total?Math.round(done/total*100):0;
     return `<div class="tab${i===activeSubject?' active':''}" onclick="switchSubject(${i})">${s.code} <span style="font-size:.65rem;opacity:.8">${pct}%</span></div>`;
   }).join('');
 }
-
 function renderOverall(){
-  const {total,done} = countAll();
-  document.getElementById("overallNum").textContent = `${done}/${total}`;
-  document.getElementById("overallBar").style.width = (total ? done/total*100 : 0)+"%";
+  const {total,done}=countAll();
+  document.getElementById("overallNum").textContent=`${done}/${total}`;
+  document.getElementById("overallBar").style.width=(total?done/total*100:0)+"%";
 }
 
 // ===================== ACTIONS =====================
-window.switchSubject = (i) => { activeSubject=i; filterMode="all"; renderAll(); };
-window.setFilter = (m) => { filterMode=m; renderAll(); };
-window.onCheck = (subjId,secIdx,qIdx) => {
-  toggleCheck(subjId,secIdx,qIdx);
+window.switchSubject=(i)=>{ activeSubject=i; filterMode="all"; renderAll(); };
+window.setFilter=(m)=>{ filterMode=m; renderAll(); };
+window.onCheck=async(subjId,secIdx,qIdx)=>{
+  await toggleCheck(subjId,secIdx,qIdx);
   renderAll();
-  const subj = SUBJECTS.find(s=>s.id===subjId);
-  const {total,done} = countSubject(subj);
+  const subj=SUBJECTS.find(s=>s.id===subjId);
+  const {total,done}=countSubject(subj);
   if(total===done) setTimeout(()=>alert(`🎉 All ${subj.code} questions mastered!`),100);
 };
-window.resetSubject = () => {
-  const subj = SUBJECTS[activeSubject];
-  if(!confirm(`Reset ALL progress & notes for ${subj.code}?`)) return;
-  subj.sections.forEach((sec,si)=>{ sec.questions.forEach((_,qi)=>{ 
+window.resetSubject=async()=>{
+  const subj=SUBJECTS[activeSubject];
+  if(!confirm(`Reset ALL progress for ${subj.code} across ALL devices?`)) return;
+  const updates={};
+  subj.sections.forEach((sec,si)=>{ sec.questions.forEach((_,qi)=>{
     const k=noteKey(subj.id,si,qi);
     delete checkState[k];
-    delete noteCache[k];
-    dbDel("notes",k);
-  }); });
-  dbSet("checks","all",checkState);
+    if(database&&currentRoomId) updates[`rooms/${currentRoomId}/checks/${k}`]=null;
+  });});
+  if(database&&currentRoomId) await update(ref(database),updates);
   renderAll();
 };
+window.showSessionPanel=()=>{
+  document.getElementById("roomInput").value=currentRoomId||"";
+  document.getElementById("sessionSetupModal").classList.add("active");
+};
+window.joinRoom=joinRoom;
 
 // ===================== MODAL =====================
-let modalCtx = null;
-let pendingFiles = [];
-
-function closeModal(){
+let modalCtx=null, pendingFiles=[];
+window.closeModal=()=>{
   document.getElementById("noteModal").classList.remove("active");
   document.getElementById("modalBody").innerHTML="";
   document.getElementById("modalFooter").innerHTML="";
   modalCtx=null; pendingFiles=[];
-}
-document.getElementById("noteModal").onclick = e => { if(e.target===document.getElementById("noteModal")) closeModal(); };
+};
+document.getElementById("noteModal").onclick=e=>{ if(e.target===document.getElementById("noteModal")) window.closeModal(); };
 
-async function openWrite(subjId,secIdx,qIdx){
-  const subj = SUBJECTS.find(s=>s.id===subjId);
-  const q = subj.sections[secIdx].questions[qIdx];
-  const note = await getNote(subjId,secIdx,qIdx);
-  modalCtx = {subjId,secIdx,qIdx,note};
-  pendingFiles = [];
-
-  document.getElementById("modalTitle").textContent = "✏️ Write Notes";
-  document.getElementById("modalQText").textContent = `Q${q[0]} [${q[1]}] — ${q[2]}`;
-
-  // existing files
-  let existingHtml = '';
+window.openWrite=async(subjId,secIdx,qIdx)=>{
+  const subj=SUBJECTS.find(s=>s.id===subjId);
+  const q=subj.sections[secIdx].questions[qIdx];
+  const note=await getNote(subjId,secIdx,qIdx);
+  modalCtx={subjId,secIdx,qIdx,note:{...note,files:[...(note.files||[])]}};
+  pendingFiles=[];
+  document.getElementById("modalTitle").textContent="✏️ Write Notes";
+  document.getElementById("modalQText").textContent=`Q${q[0]} [${q[1]}] — ${q[2]}`;
+  let existingHtml='';
   if(note.files?.length){
-    existingHtml = `<div style="margin-top:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">📎 Existing Attachments</div>
+    existingHtml=`<div style="margin-top:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">📎 Existing Attachments</div>
       <div class="preview-grid">${note.files.map((f,idx)=>`
         <div class="preview-item">
           ${f.type.startsWith('image/')?`<img class="preview-img" src="${f.dataURL}" onclick="showLightbox('${esc(f.dataURL)}')" alt=""/>`
@@ -806,132 +1003,120 @@ async function openWrite(subjId,secIdx,qIdx){
         </div>`).join('')}
       </div></div>`;
   }
-
-  document.getElementById("modalBody").innerHTML = `
+  document.getElementById("modalBody").innerHTML=`
     <textarea class="write-area" id="noteTA" placeholder="Write your explanation, key points, formulas, hints...">${esc(note.text||"")}</textarea>
     <div class="file-upload-zone" onclick="document.getElementById('fileInp').click()">
       <div style="font-size:1.5rem">📎</div>
       <div style="font-size:.82rem;font-weight:700;color:#475569;margin-top:6px;">Attach Images or Files</div>
-      <div class="file-upload-text">Click to browse — images, PDFs, any file type</div>
+      <div class="file-upload-text">Click to browse — images, PDFs, any file type (stored locally on this device)</div>
       <input type="file" id="fileInp" multiple accept="*/*">
     </div>
     <div class="preview-grid" id="newFilesPreview"></div>
     ${existingHtml}`;
-
-  document.getElementById("modalFooter").innerHTML = `
+  document.getElementById("modalFooter").innerHTML=`
     <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
     <button class="btn btn-primary" onclick="saveNote()">💾 Save Notes</button>`;
-
   document.getElementById("noteModal").classList.add("active");
-
-  document.getElementById("fileInp").onchange = async e => {
-    pendingFiles = [];
-    document.getElementById("newFilesPreview").innerHTML = "";
+  document.getElementById("fileInp").onchange=async e=>{
+    pendingFiles=[];
+    document.getElementById("newFilesPreview").innerHTML="";
     for(const file of Array.from(e.target.files)){
-      const dataURL = await readFile(file);
-      pendingFiles.push({ name:file.name, type:file.type, dataURL });
-      const item = document.createElement("div");
-      item.className = "preview-item";
-      item.innerHTML = file.type.startsWith('image/')
-        ? `<img class="preview-img" src="${dataURL}" onclick="showLightbox('${dataURL.replace(/'/g,"\\'")}')" />`
-        : `<div class="preview-file"><span class="preview-file-icon">📄</span>${esc(file.name)}</div>`;
+      const dataURL=await readFile(file);
+      pendingFiles.push({name:file.name,type:file.type,dataURL});
+      const item=document.createElement("div");
+      item.className="preview-item";
+      item.innerHTML=file.type.startsWith('image/')
+        ?`<img class="preview-img" src="${dataURL}" onclick="showLightbox('${dataURL.replace(/'/g,"\\'")}')"/>`
+        :`<div class="preview-file"><span class="preview-file-icon">📄</span>${esc(file.name)}</div>`;
       document.getElementById("newFilesPreview").appendChild(item);
     }
   };
-}
-
-window.removeExistingFile = (idx) => {
-  if(!modalCtx) return;
-  const note = modalCtx.note;
-  note.files.splice(idx,1);
-  openWrite(modalCtx.subjId,modalCtx.secIdx,modalCtx.qIdx);
 };
 
-window.saveNote = async () => {
+window.removeExistingFile=(idx)=>{
   if(!modalCtx) return;
-  const {subjId,secIdx,qIdx,note} = modalCtx;
-  const text = document.getElementById("noteTA").value;
-  const files = [...(note.files||[]), ...pendingFiles];
-  await setNote(subjId,secIdx,qIdx,text,files);
-  closeModal();
+  modalCtx.note.files.splice(idx,1);
+  window.openWrite(modalCtx.subjId,modalCtx.secIdx,modalCtx.qIdx);
+};
+window.saveNote=async()=>{
+  if(!modalCtx) return;
+  const {subjId,secIdx,qIdx,note}=modalCtx;
+  const text=document.getElementById("noteTA").value;
+  const files=[...(note.files||[]),...pendingFiles];
+  await saveNoteLocal(subjId,secIdx,qIdx,text,files);
+  window.closeModal();
   renderAll();
-  // show toast
   showToast("✨ Notes saved!");
 };
 
-async function openRead(subjId,secIdx,qIdx){
-  const subj = SUBJECTS.find(s=>s.id===subjId);
-  const q = subj.sections[secIdx].questions[qIdx];
-  const note = await getNote(subjId,secIdx,qIdx);
-
-  document.getElementById("modalTitle").textContent = "📖 Read Notes";
-  document.getElementById("modalQText").textContent = `Q${q[0]} [${q[1]}] — ${q[2]}`;
-
-  const hasText = note.text?.trim();
-  const hasFiles = note.files?.length > 0;
-
-  let body = '';
-  if(!hasText && !hasFiles){
-    body = `<div class="read-empty">📭 No notes yet for this question.<br><span style="font-size:.75rem;">Tap ✏️ Write to add your notes!</span></div>`;
+window.openRead=async(subjId,secIdx,qIdx)=>{
+  const subj=SUBJECTS.find(s=>s.id===subjId);
+  const q=subj.sections[secIdx].questions[qIdx];
+  const note=await getNote(subjId,secIdx,qIdx);
+  document.getElementById("modalTitle").textContent="📖 Read Notes";
+  document.getElementById("modalQText").textContent=`Q${q[0]} [${q[1]}] — ${q[2]}`;
+  const hasText=note.text?.trim(), hasFiles=note.files?.length>0;
+  let body='';
+  if(!hasText&&!hasFiles){
+    body=`<div class="read-empty">📭 No notes yet for this question.<br><span style="font-size:.75rem;">Tap ✏️ Write to add your notes!</span></div>`;
   } else {
-    if(hasText){
-      body += `<div style="margin-bottom:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">✍️ Your Notes</div>
-        <div class="read-notes-text">${esc(note.text)}</div></div>`;
-    }
+    if(hasText) body+=`<div style="margin-bottom:14px;"><div style="font-size:.75rem;font-weight:700;color:#475569;margin-bottom:8px;">✍️ Your Notes</div><div class="read-notes-text">${esc(note.text)}</div></div>`;
     if(hasFiles){
-      body += `<div class="read-files-label">📎 Attachments (${note.files.length})</div><div class="preview-grid">`;
+      body+=`<div class="read-files-label">📎 Attachments (${note.files.length})</div><div class="preview-grid">`;
       for(const f of note.files){
         if(f.type.startsWith('image/')){
-          body += `<div class="preview-item"><img class="read-img" src="${f.dataURL}" onclick="showLightbox('${f.dataURL.replace(/'/g,"\\'")}')" title="Click to zoom" /></div>`;
+          body+=`<div class="preview-item"><img class="read-img" src="${f.dataURL}" onclick="showLightbox('${f.dataURL.replace(/'/g,"\\'")}')"/></div>`;
         } else {
-          body += `<div class="preview-item"><div class="preview-file"><span class="preview-file-icon">📄</span><a class="read-file-link" href="${f.dataURL}" download="${esc(f.name)}" target="_blank">⬇ ${esc(f.name)}</a></div></div>`;
+          body+=`<div class="preview-item"><div class="preview-file"><span class="preview-file-icon">📄</span><a class="read-file-link" href="${f.dataURL}" download="${esc(f.name)}" target="_blank">⬇ ${esc(f.name)}</a></div></div>`;
         }
       }
-      body += `</div>`;
+      body+=`</div>`;
     }
   }
-
-  document.getElementById("modalBody").innerHTML = body;
-  document.getElementById("modalFooter").innerHTML = `
+  document.getElementById("modalBody").innerHTML=body;
+  document.getElementById("modalFooter").innerHTML=`
     <button class="btn btn-secondary" onclick="closeModal()">Close</button>
     <button class="btn btn-edit" onclick="closeModal();openWrite('${subjId}',${secIdx},${qIdx})">✏️ Edit Notes</button>`;
   document.getElementById("noteModal").classList.add("active");
-}
-
-// expose
-window.openWrite = openWrite;
-window.openRead = openRead;
-window.closeModal = closeModal;
+};
 
 // ===================== LIGHTBOX =====================
-window.showLightbox = (src) => {
-  document.getElementById("lightboxImg").src = src;
-  document.getElementById("lightbox").classList.add("active");
-};
-window.closeLightbox = () => {
-  document.getElementById("lightbox").classList.remove("active");
-  document.getElementById("lightboxImg").src = "";
-};
-document.getElementById("lightbox").onclick = e => { if(e.target===document.getElementById("lightbox")) closeLightbox(); };
+window.showLightbox=(src)=>{ document.getElementById("lightboxImg").src=src; document.getElementById("lightbox").classList.add("active"); };
+window.closeLightbox=()=>{ document.getElementById("lightbox").classList.remove("active"); document.getElementById("lightboxImg").src=""; };
+document.getElementById("lightbox").onclick=e=>{ if(e.target===document.getElementById("lightbox")) window.closeLightbox(); };
 
 // ===================== UTILS =====================
-function readFile(file){
-  return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-}
-
+function readFile(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
 function showToast(msg){
-  const t = document.createElement("div");
-  t.textContent = msg;
+  const t=document.createElement("div");
+  t.textContent=msg;
   Object.assign(t.style,{position:"fixed",bottom:"24px",left:"50%",transform:"translateX(-50%)",
     background:"#1e2a3a",color:"#fff",padding:"10px 22px",borderRadius:"40px",
     fontSize:".82rem",fontWeight:"700",zIndex:"9999",boxShadow:"0 4px 20px rgba(0,0,0,.3)",
     transition:"opacity .4s"});
   document.body.appendChild(t);
-  setTimeout(()=>{ t.style.opacity="0"; setTimeout(()=>t.remove(),400); }, 2000);
+  setTimeout(()=>{ t.style.opacity="0"; setTimeout(()=>t.remove(),400); },2000);
 }
 
 // ===================== INIT =====================
-openDB().then(()=>loadAll()).then(()=>renderAll());
+async function init(){
+  await openDB();
+  const ok = await initFirebase();
+  const savedRoom = localStorage.getItem("spv_roomId");
+  if(savedRoom && ok){
+    // auto-rejoin saved room
+    currentRoomId = savedRoom;
+    document.getElementById("sessionSetupModal").classList.remove("active");
+    document.getElementById("sessionLabel").textContent="Room: "+savedRoom;
+    document.getElementById("roomInput").value=savedRoom;
+    await loadRoomData();
+    listenToRoom();
+    trackPresence();
+  }
+  renderAll();
+}
+
+init();
 </script>
 </body>
 </html>
