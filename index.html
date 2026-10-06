@@ -75,7 +75,6 @@
       padding: 0 14px;
     }
 
-    /* Top row: logo + title + actions */
     .top {
       display: flex;
       align-items: center;
@@ -84,7 +83,6 @@
       flex-wrap: wrap;
     }
 
-    /* Logo */
     .logo {
       width: 10%;
       height: 34px;
@@ -96,7 +94,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,.08);
     }
 
-    /* Title wrapper grows to fill space */
     .brand {
       display: flex;
       align-items: center;
@@ -117,7 +114,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Action buttons group */
     .rb {
       display: flex;
       gap: 6px;
@@ -452,80 +448,25 @@
 
     /* ─── Mobile adjustments ─── */
     @media (max-width: 520px) {
-      .wrap {
-        padding: 0 10px;
-      }
-
-      .top {
-        gap: 8px;
-        padding: 8px 0 6px;
-      }
-
-      .logo {
-        width: 34px;
-        height: 34px;
-      }
-
-      h1 {
-        font-size: 15px;
-      }
-
-      .rb {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .rb select {
-        flex: 1 1 100%;
-        order: -1;
-      }
-
-      .rb button.b {
-        flex: 1 1 auto;
-        text-align: center;
-      }
-
-      .tab {
-        min-width: 100px;
-        padding: 6px 8px;
-      }
-
-      .tab b {
-        font-size: 12px;
-      }
-
-      .big {
-        font-size: 24px;
-      }
-
-      .hero {
-        padding: 14px;
-        border-radius: 14px;
-      }
-
-      .hero h2 {
-        font-size: 17px;
-      }
-
-      summary {
-        font-size: 14px;
-        padding: 10px 12px;
-      }
-
-      .in {
-        padding: 0 10px 12px;
-      }
+      .wrap { padding: 0 10px; }
+      .top { gap: 8px; padding: 8px 0 6px; }
+      .logo { width: 34px; height: 34px; }
+      h1 { font-size: 15px; }
+      .rb { width: 100%; justify-content: space-between; }
+      .rb select { flex: 1 1 100%; order: -1; }
+      .rb button.b { flex: 1 1 auto; text-align: center; }
+      .tab { min-width: 100px; padding: 6px 8px; }
+      .tab b { font-size: 12px; }
+      .big { font-size: 24px; }
+      .hero { padding: 14px; border-radius: 14px; }
+      .hero h2 { font-size: 17px; }
+      summary { font-size: 14px; padding: 10px 12px; }
+      .in { padding: 0 10px 12px; }
     }
 
     @media (max-width: 360px) {
-      h1 {
-        font-size: 14px;
-      }
-
-      .logo {
-        width: 30px;
-        height: 30px;
-      }
+      h1 { font-size: 14px; }
+      .logo { width: 30px; height: 30px; }
     }
   </style>
 </head>
@@ -564,7 +505,9 @@
        1. FIREBASE IMPORTS
        ───────────────────────────────────────────────────── */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import {
       getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc,
       query, where, onSnapshot
@@ -868,17 +811,17 @@
       ["#f97316", "#e11d48"]
     ];
 
-    let U = null;          // user helper object
-    let ID = null;         // current user uid
-    let R = null;          // current room
-    let rooms = [];        // list of rooms
-    let cur = 0;           // current subject index
-    let timer;             // debounce timer
-    let showMem = false;   // members panel toggle
-    let qo = {};           // which questions have their notes panel open
+    let U = null;
+    let ID = null;
+    let R = null;
+    let rooms = [];
+    let cur = 0;
+    let timer;
+    let showMem = false;
+    let qo = {};
 
     const fresh = () => ({ ck: {}, nt: {}, fl: {}, open: {}, pend: false });
-    let D = fresh();       // current user's data
+    let D = fresh();
 
     /* ─────────────────────────────────────────────────────
        5. UTILITY FUNCTIONS
@@ -929,24 +872,47 @@
     }
 
     /* ─────────────────────────────────────────────────────
-       6. INITIALISE (Firebase auth + live rooms listener)
+       6. INITIALISE (Google auth + live rooms listener)
        ───────────────────────────────────────────────────── */
     async function init() {
-      try {
-        const cred = await signInAnonymously(auth);
-        ID = cred.user.uid;
-      } catch (e) {
-        gate("Authentication failed: " + why(e));
-        return;
-      }
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          showSignIn();
+          return;
+        }
+        ID = user.uid;
+        await setupUser();
+        listenRooms();
+      });
+    }
 
-      // Ensure a users/{uid} doc exists
+    function showSignIn() {
+      $("#main").innerHTML = `<div class="hero empty">
+        <h2>🔐 Sign in</h2>
+        <p>Sign in with Google so your rooms appear on every device (PC, mobile, tablet).</p>
+        <div class="row" style="justify-content:center">
+          <button class="b" id="gsi">🔐 Sign in with Google</button>
+        </div>
+      </div>`;
+      $("#tabs").innerHTML = "";
+      $("#panel").innerHTML = "";
+      $("#rsel").innerHTML = "<option>Not signed in</option>";
+      document.getElementById("gsi").onclick = async () => {
+        try {
+          await signInWithPopup(auth, new GoogleAuthProvider());
+        } catch (e) {
+          toast("Sign-in failed: " + why(e));
+        }
+      };
+    }
+
+    async function setupUser() {
       try {
-        const name = localStorage.getItem("userName") || ("User-" + ID.slice(0, 6).toUpperCase());
+        const name = (auth.currentUser && auth.currentUser.displayName)
+          || ("User-" + ID.slice(0, 6).toUpperCase());
         await setDoc(doc(db, "users", ID), { name }, { merge: true });
       } catch (e) {}
 
-      // User helper (profiles + search)
       U = {
         id: async () => ID,
         profiles: async (ids) => {
@@ -972,8 +938,9 @@
           } catch (e) { return []; }
         }
       };
+    }
 
-      // Live listener on rooms the user is a member of
+    function listenRooms() {
       onSnapshot(
         query(collection(db, "rooms"), where("members", "array-contains", ID)),
         snap => {
@@ -1079,7 +1046,16 @@
         ? `<div class="row"><input id="ms" placeholder="Search people to add…"></div><div id="mres"></div><small style="color:var(--mut)">New members must also open this page on the same Firebase project. Notes and files stay private to each person.</small>`
         : `<small style="color:var(--mut)">Only the room owner can add or remove members.</small>`;
 
+      h += `<div class="row" style="justify-content:flex-end;margin-top:12px"><button class="b" id="sout">🚪 Sign out</button></div>`;
+
       P.innerHTML = h + "</div>";
+
+      const so = document.getElementById("sout");
+      if (so) so.onclick = async () => {
+        if (confirm("Sign out? You'll need to sign in again to see your rooms.")) {
+          try { await signOut(auth); } catch (e) { toast("Sign-out failed"); }
+        }
+      };
     }
 
     /* ─────────────────────────────────────────────────────
@@ -1093,7 +1069,6 @@
     }
 
     function page() {
-      // No room selected → show room picker
       if (!R) {
         $("#main").innerHTML = `<div class="hero empty"><h2>🏠 Enter your room</h2><p>Type a room ID to join, or create a new room.</p>
           <div class="row" style="justify-content:center"><input type="text" id="rid" placeholder="Room ID" maxlength="24" autocomplete="off"><button class="b" id="jr">Join room</button></div>
@@ -1104,20 +1079,17 @@
 
       const i = cur, s = S[i], p = prog(i);
 
-      // Hero with progress
       let h = `<div class="hero"><h2>${s.c} — ${s.n}</h2><p>Total progress · room: ${esc(R.name)}</p>
         <div class="row" style="margin-top:0"><span class="big" id="pp">${p.p}%</span><span id="pc">${p.d} of ${p.t} questions done</span></div>
         <div class="bar" style="margin-top:8px"><i id="pb" style="width:${p.p}%"></i></div>
         <div class="row"><label><input type="checkbox" id="pend" ${D.pend ? "checked" : ""}> Revision mode: only pending</label><button class="b" id="rs">Reset subject</button></div></div>`;
 
-      // Units
       s.u.forEach((u, j) => {
         const qs = u.q.map((q, k) => ({ ...parse(q), k }));
         const ud = qs.filter(x => D.ck[qid(i, j, x.k)]).length;
 
         h += `<details ${D.open[i + "." + j] !== false ? "open" : ""} data-u="${i}.${j}"><summary>Unit ${j + 1} — ${u.t}<span id="uc${j}">${ud}/${qs.length}</span></summary><div class="in"><div class="syl"><b>Syllabus:</b> ${u.s}</div>`;
 
-        // Questions
         qs.forEach(x => {
           const id = qid(i, j, x.k), c = !!D.ck[id];
           if (D.pend && c) return;
@@ -1125,7 +1097,6 @@
 
           h += `<div class="qw"><label class="q ${c ? "done" : ""} ${x.star ? "star" : ""} ${x.two ? "two" : ""}"><input type="checkbox" data-q="${id}" data-j="${j}" ${c ? "checked" : ""}><span>${x.two ? "<b>2-mark:</b> " : ""}${x.txt}</span></label><button class="b clip ${has ? "has" : ""}" data-qn="${id}" title="Notes & files">📎${fl.length ? fl.length : ""}</button></div>`;
 
-          // Expanded notes panel
           if (qo[id]) {
             h += `<div class="qn"><textarea data-n="${id}" placeholder="Hints / notes for this question…">${esc(D.nt[id] || "")}</textarea>
               ${fl.map((f, n) => `<div class="f">📄<span>${esc(f.name)}</span><button class="b" data-fd="${id}|${n}">⬇</button><button class="b" data-fx="${id}|${n}">✕</button></div>`).join("")}
@@ -1157,7 +1128,7 @@
     };
 
     $("#rsel").onchange = e => selectRoom(e.target.value);
-    $("#nr").onclick = newRoom;
+    $("#nr").onclick = () => { if (!ID) return toast("Sign in first"); newRoom(); };
     $("#mb").onclick = () => { if (!R) return; showMem = !showMem; memPanel(); };
     $("#home").onclick = () => { R = null; showMem = false; memPanel(); head(); render(); };
 
