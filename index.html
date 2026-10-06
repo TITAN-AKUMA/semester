@@ -1,930 +1,1213 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>7th semester Study Hub</title>
-  <link rel="icon" href="logo.png" type="image/png">
-
-  <style>
-    :root {
-      box-sizing: border-box;
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-      --bg: #f3f0ff;
-      --card: #fff;
-      --ink: #1d2330;
-      --mut: #667085;
-      --line: #e4e0f5;
-      --sc: #7c3aed;
-      --sc2: #ec4899;
-      --ok: #16a34a;
-      --hi: #fff1c2;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --bg: #14122a; --card: #1d1b36; --ink: #ecebff;
-        --mut: #a5a3c9; --line: #2f2c55; --hi: #4a3d12;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>7th semester Study Hub</title>
+    <link
+      rel="icon"
+      href="logo.png"
+    />
+    <style>
+      :root {
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        --bg: #f3f0ff;
+        --card: #fff;
+        --ink: #1d2330;
+        --mut: #667085;
+        --line: #e4e0f5;
+        --sc: #7c3aed;
+        --sc2: #ec4899;
+        --ok: #16a34a;
+        --hi: #fff1c2;
       }
-    }
-    :root[data-theme="dark"] {
-      --bg: #14122a; --card: #1d1b36; --ink: #ecebff;
-      --mut: #a5a3c9; --line: #2f2c55; --hi: #4a3d12;
-    }
-
-    html { scroll-padding-top: env(safe-area-inset-top, 0px); }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    header {
-      position: sticky; top: env(safe-area-inset-top, 0px);
-      background: var(--card); border-bottom: 3px solid var(--sc); z-index: 5;
-    }
-    .wrap { max-width: 880px; margin: 0 auto; padding: 0 14px; }
-    .top {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 0 6px; flex-wrap: wrap;
-    }
-    .logo {
-      width: 10%; height: 34px; object-fit: contain;
-      border-radius: 10px; flex: none; padding: 3px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.08);
-      cursor: pointer;
-      transition: transform .15s;
-    }
-    .logo:hover { transform: scale(1.08); }
-    .logo:active { transform: scale(0.94); }
-
-    .brand {
-      display: flex; align-items: center; gap: 8px;
-      flex: 1 1 auto; min-width: 0;
-    }
-    h1 {
-      font-size: 18px; margin: 0;
-      background: linear-gradient(90deg, var(--sc), var(--sc2));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .rb {
-      display: flex; gap: 6px; flex-wrap: wrap;
-      align-items: center; flex: 0 1 auto;
-    }
-    .room-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      border: 1px solid var(--line); background: var(--bg);
-      border-radius: 99px; padding: 5px 12px;
-      font-size: 13px; cursor: pointer;
-      max-width: 100%;
-    }
-    .room-chip b {
-      color: var(--sc); font-weight: 700;
-      max-width: 160px; overflow: hidden; text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .room-chip:hover { border-color: var(--sc); }
-
-    select, input[type=text], #ms {
-      border: 1px solid var(--line); background: var(--bg); color: var(--ink);
-      border-radius: 8px; padding: 6px 8px; font: inherit;
-      font-size: 13px; max-width: 100%;
-    }
-
-    /* ─── Tabs ─── */
-    .tabs {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px;
-      -webkit-overflow-scrolling: touch; scrollbar-width: thin;
-    }
-    .tab {
-      flex: 1 0 auto; min-width: 118px; text-align: left;
-      border: 2px solid transparent; background: var(--bg); color: var(--ink);
-      border-radius: 12px; padding: 7px 10px; cursor: pointer; font: inherit;
-    }
-    .tab b { display: block; font-size: 13px; }
-    .tab small { color: var(--mut); font-size: 11px; }
-    .tab.on {
-      background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff;
-    }
-    .tab.on small { color: #ffffffcc; }
-
-    /* ─── Progress ─── */
-    .bar {
-      height: 7px; background: var(--line); border-radius: 9px;
-      overflow: hidden; margin-top: 4px;
-    }
-    .bar i {
-      display: block; height: 100%;
-      background: linear-gradient(90deg, var(--c1, var(--sc)), var(--c2, var(--sc2)));
-      width: 0; transition: width .3s;
-    }
-    .tab.on .bar { background: #ffffff55; }
-    .tab.on .bar i { background: #fff; }
-
-    /* ─── Buttons ─── */
-    button.b {
-      border: 1px solid var(--line); background: var(--card); color: var(--ink);
-      border-radius: 8px; padding: 6px 10px; cursor: pointer;
-      font: inherit; font-size: 13px; white-space: nowrap;
-    }
-    button.b:hover { border-color: var(--sc); }
-
-    /* ─── Hero ─── */
-    .hero {
-      background: linear-gradient(135deg, var(--sc), var(--sc2));
-      color: #fff; border-radius: 16px; padding: 16px; margin: 14px 0;
-    }
-    .hero h2 { margin: 0 0 2px; font-size: 20px; }
-    .hero p { margin: 0 0 10px; opacity: .85; font-size: 14px; }
-    .hero .bar { height: 14px; background: #ffffff44; }
-    .hero .bar i { background: #fff; }
-    .hero .b { background: #ffffff26; color: #fff; border-color: #ffffff66; }
-
-    .row {
-      display: flex; gap: 8px; align-items: center;
-      flex-wrap: wrap; margin-top: 10px;
-    }
-    .big { font-size: 28px; font-weight: 800; }
-    .empty { text-align: center; padding: 40px 10px; }
-
-    /* ─── Members Panel ─── */
-    .mem {
-      background: var(--card); color: var(--ink);
-      border: 2px solid var(--sc);
-    }
-    .mem .b { background: var(--card); color: var(--ink); }
-    .mrow {
-      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-      padding: 6px 0; border-top: 1px solid var(--line);
-    }
-    .mrow small { color: var(--mut); flex: 1; }
-
-    /* ─── Units ─── */
-    details {
-      background: var(--card); border: 1px solid var(--line);
-      border-left: 6px solid var(--sc); border-radius: 12px;
-      margin: 10px 0; overflow: hidden;
-    }
-    summary {
-      cursor: pointer; padding: 12px 14px; font-weight: 600;
-      display: flex; justify-content: space-between; gap: 10px;
-      align-items: center; font-size: 15px;
-    }
-    summary span {
-      font-size: 12px; color: #fff; background: var(--sc);
-      border-radius: 99px; padding: 1px 9px; white-space: nowrap;
-    }
-    .in { padding: 0 14px 14px; }
-    .syl {
-      font-size: 14px; color: var(--mut); background: var(--bg);
-      border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;
-    }
-
-    /* ─── Questions ─── */
-    .qw {
-      display: flex; align-items: flex-start;
-      border-top: 1px solid var(--line);
-    }
-    label.q {
-      flex: 1; display: flex; gap: 10px; align-items: flex-start;
-      padding: 9px 6px; cursor: pointer; min-width: 0;
-    }
-    label.q input {
-      width: 20px; height: 20px; margin-top: 2px;
-      accent-color: var(--ok); flex: none;
-    }
-    label.q span { word-break: break-word; }
-    label.q.done span { text-decoration: line-through; color: var(--mut); }
-    label.q.star span:before { content: "★ "; color: #f59e0b; }
-    label.q.two { background: var(--hi); border-radius: 6px; }
-    .clip { margin: 6px 0 0 4px; flex: none; }
-    .clip.has { border-color: var(--sc); color: var(--sc); }
-
-    /* ─── Notes / Files ─── */
-    .qn {
-      background: var(--bg); border-radius: 10px;
-      padding: 10px; margin: 0 0 8px;
-    }
-    textarea {
-      width: 100%; min-height: 80px;
-      border: 1px solid var(--line); border-radius: 8px;
-      background: var(--card); color: var(--ink);
-      font: 14px/1.5 inherit; padding: 8px; resize: vertical;
-    }
-    .f {
-      display: flex; gap: 6px; align-items: center;
-      font-size: 13px; padding: 3px 0; word-break: break-all;
-    }
-    .f span { flex: 1; }
-
-    /* ─── Toast ─── */
-    #toast {
-      position: fixed; left: 50%;
-      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-      transform: translateX(-50%);
-      background: #111; color: #fff; border-radius: 9px;
-      padding: 8px 14px; font-size: 13px; display: none;
-      z-index: 9; max-width: 90vw; text-align: center;
-    }
-
-    /* ─── Mobile ─── */
-    @media (max-width: 520px) {
-      .wrap { padding: 0 10px; }
-      .top { gap: 8px; padding: 8px 0 6px; }
-      .logo { width: 40px; height: 40px; }
-      h1 { font-size: 15px; }
-      .rb { width: 100%; justify-content: flex-start; }
-      .tab { min-width: 100px; padding: 6px 8px; }
-      .tab b { font-size: 12px; }
-      .big { font-size: 24px; }
-      .hero { padding: 14px; border-radius: 14px; }
-      .hero h2 { font-size: 17px; }
-      summary { font-size: 14px; padding: 10px 12px; }
-      .in { padding: 0 10px 12px; }
-    }
-    @media (max-width: 360px) {
-      h1 { font-size: 14px; }
-      .logo { width: 34px; height: 34px; }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <div class="wrap">
-      <div class="top">
-        <div class="brand">
-          <img src="logo.png" alt="Tap to set room" class="logo" id="logoBtn" title="Tap to set room name">
-          <h1>7th semester Study Hub</h1>
-        </div>
-        <div class="rb">
-          <div class="room-chip" id="roomChip" title="Tap to change room">
-            🏠 <b id="rnow">No room</b>
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #14122a;
+          --card: #1d1b36;
+          --ink: #ecebff;
+          --mut: #a5a3c9;
+          --line: #2f2c55;
+          --hi: #4a3d12;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #14122a;
+        --card: #1d1b36;
+        --ink: #ecebff;
+        --mut: #a5a3c9;
+        --line: #2f2c55;
+        --hi: #4a3d12;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      header {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        background: var(--card);
+        border-bottom: 3px solid var(--sc);
+        z-index: 5;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 14px;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 0 6px;
+        flex-wrap: wrap;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+        background: linear-gradient(90deg, var(--sc), var(--sc2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .rb {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      select,
+      input[type="text"],
+      #ms {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 8px;
+        font: inherit;
+        font-size: 13px;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+      }
+      .tab {
+        flex: 1 0 auto;
+        min-width: 118px;
+        text-align: left;
+        border: 2px solid transparent;
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 7px 10px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .tab b {
+        display: block;
+        font-size: 13px;
+      }
+      .tab small {
+        color: var(--mut);
+        font-size: 11px;
+      }
+      .tab.on {
+        background: linear-gradient(135deg, var(--c1), var(--c2));
+        color: #fff;
+      }
+      .tab.on small {
+        color: #ffffffcc;
+      }
+      .bar {
+        height: 7px;
+        background: var(--line);
+        border-radius: 9px;
+        overflow: hidden;
+        margin-top: 4px;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--c1, var(--sc)), var(--c2, var(--sc2)));
+        width: 0;
+        transition: width 0.3s;
+      }
+      .tab.on .bar {
+        background: #ffffff55;
+      }
+      .tab.on .bar i {
+        background: #fff;
+      }
+      .b {
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+      }
+      .b:hover {
+        border-color: var(--sc);
+      }
+      .hero {
+        background: linear-gradient(135deg, var(--sc), var(--sc2));
+        color: #fff;
+        border-radius: 16px;
+        padding: 16px;
+        margin: 14px 0;
+      }
+      .hero h2 {
+        margin: 0 0 2px;
+        font-size: 20px;
+      }
+      .hero p {
+        margin: 0 0 10px;
+        opacity: 0.85;
+        font-size: 14px;
+      }
+      .hero .bar {
+        height: 14px;
+        background: #ffffff44;
+      }
+      .hero .bar i {
+        background: #fff;
+      }
+      .hero .b {
+        background: #ffffff26;
+        color: #fff;
+        border-color: #ffffff66;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .big {
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .mem {
+        background: var(--card);
+        color: var(--ink);
+        border: 2px solid var(--sc);
+      }
+      .mem .b {
+        background: var(--card);
+        color: var(--ink);
+      }
+      .mrow {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 6px 0;
+        border-top: 1px solid var(--line);
+      }
+      .mrow small {
+        color: var(--mut);
+        flex: 1;
+      }
+      details {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--sc);
+        border-radius: 12px;
+        margin: 10px 0;
+        overflow: hidden;
+      }
+      summary {
+        cursor: pointer;
+        padding: 12px 14px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+      summary span {
+        font-size: 12px;
+        color: #fff;
+        background: var(--sc);
+        border-radius: 99px;
+        padding: 1px 9px;
+        white-space: nowrap;
+      }
+      .in {
+        padding: 0 14px 14px;
+      }
+      .syl {
+        font-size: 14px;
+        color: var(--mut);
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+      }
+      .qw {
+        display: flex;
+        align-items: flex-start;
+        border-top: 1px solid var(--line);
+      }
+      label.q {
+        flex: 1;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 9px 6px;
+        cursor: pointer;
+      }
+      label.q input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        accent-color: var(--ok);
+        flex: none;
+      }
+      label.q.done span {
+        text-decoration: line-through;
+        color: var(--mut);
+      }
+      label.q.star span:before {
+        content: "★ ";
+        color: #f59e0b;
+      }
+      label.q.two {
+        background: var(--hi);
+        border-radius: 6px;
+      }
+      .clip {
+        margin: 6px 0 0 4px;
+        flex: none;
+      }
+      .clip.has {
+        border-color: var(--sc);
+        color: var(--sc);
+      }
+      .qn {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 10px;
+        margin: 0 0 8px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 80px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--ink);
+        font: 14px/1.5 inherit;
+        padding: 8px;
+        resize: vertical;
+      }
+      .f {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+        padding: 3px 0;
+        word-break: break-all;
+      }
+      .f span {
+        flex: 1;
+      }
+      .empty {
+        text-align: center;
+        padding: 40px 10px;
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        background: #111;
+        color: #fff;
+        border-radius: 9px;
+        padding: 8px 14px;
+        font-size: 13px;
+        display: none;
+        z-index: 9;
+      }
+      .b {
+        text-decoration: none;
+        display: inline-block;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lg {
+        font-size: 22px;
+      }
+      input[type="password"] {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px;
+        font: inherit;
+        width: min(320px, 100%);
+      }
+      #gn {
+        width: min(320px, 100%);
+        padding: 8px;
+      }
+      .f a {
+        flex: none;
+      }
+      #chip b {
+        color: var(--sc);
+      }
+      @media (max-width: 520px) {
+        textarea,
+        input,
+        select {
+          font-size: 16px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="top">
+          <div class="brand">
+            <img src="logo.png" alt="Logo" style="width: 5%;" />
+            <span class="lg">📚</span>
+            <h1>7th semester Study Hub</h1>
+          </div>
+          <div class="rb">
+            <button class="b" id="chip" title="Change room">🏠 <b id="rnow">No room</b></button>
           </div>
         </div>
+        <div class="tabs" id="tabs"></div>
       </div>
-      <div class="tabs" id="tabs"></div>
-    </div>
-  </header>
+    </header>
+    <main class="wrap" id="main"></main>
+    <div id="toast"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        setDoc,
+        onSnapshot,
+        deleteField,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+      import {
+        getStorage,
+        ref as sRef,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+      const app = initializeApp({
+        apiKey: "AIzaSyATlDCcj-TVL1DVJ8I7D0KEU3Z3Hk91AZo",
+        authDomain: "storage-59be5.firebaseapp.com",
+        projectId: "storage-59be5",
+        storageBucket: "storage-59be5.firebasestorage.app",
+        messagingSenderId: "485318027222",
+        appId: "1:485318027222:web:dde21326bf9faa45e9e677",
+      });
+      const auth = getAuth(app),
+        db = getFirestore(app),
+        storage = getStorage(app);
+      const S = [
+        {
+          c: "GE3791",
+          n: "Human Values & Ethics",
+          u: [
+            {
+              t: "Democratic Values",
+              s: "Equality, Liberty, Fraternity, Freedom, Justice, Pluralism, Tolerance, Respect, Freedom of Expression, Citizen Participation; French Revolution, American Independence, Indian Freedom Movement.",
+              q: [
+                "★Core democratic values (Equality, Liberty, Fraternity, Justice) with examples",
+                "French Revolution: causes, course, influence on democratic thought",
+                "American Independence and its contribution to democratic values",
+                "Indian Freedom Movement: causes, influences, catalysts",
+                "Citizen participation in governance: elements of an effective model",
+                "Pluralism and tolerance: when is pluralism acceptable / not?",
+                "2:Define pluralism, tolerance, freedom of expression",
+              ],
+            },
+            {
+              t: "Secular Values",
+              s: "Secularism in the Indian context, state disassociated from religion, acceptance of all faiths, non-discriminatory practices.",
+              q: [
+                "★Secularism in the Indian context (Indian vs Western secularism)",
+                "Disassociation of state from religion: meaning and significance",
+                "Acceptance of all faiths (Vivekananda's view)",
+                "Non-discriminatory practices: needs, principles, limitations",
+                "Secularism in the Constitution; threats and challenges",
+                "2:Define secularism; list constitutional articles on religious freedom",
+              ],
+            },
+            {
+              t: "Scientific Values",
+              s: "Scientific thinking & method, inductive & deductive thinking, hypothesis, evidence-based validation, skepticism, empiricism, rationalism, scientific temper.",
+              q: [
+                "★Inductive vs deductive thinking with examples",
+                "★Hypothesis: concept, types, testing, level of significance",
+                "★Skepticism vs empiricism",
+                "★Rationalism and scientific temper: importance",
+                "Evidence-based validation",
+                "2:Define hypothesis, empiricism, scientific temper",
+              ],
+            },
+            {
+              t: "Social Ethics",
+              s: "Ethical reasoning for social problems; gender bias; gender violence; social discrimination; constitutional protection; inclusive practices.",
+              q: [
+                "★Gender bias: types, areas, causes in India; how to reduce",
+                "Gender-based violence: forms, causes, effects, prevention",
+                "★Social discrimination: types; constitutional provisions (Art. 12–35)",
+                "★Inclusive practices: building an inclusive society",
+                "Ethical reasoning applied to social problems",
+                "2:Define gender bias, discrimination, inclusion",
+              ],
+            },
+            {
+              t: "Scientific Ethics",
+              s: "Transparency & fairness in science, inventions for betterment, unfair application of inventions, role & responsibility of scientists.",
+              q: [
+                "★Transparency and fairness in scientific pursuits",
+                "★Role and responsibility of scientists (Part C favourite)",
+                "★Unfair application of scientific inventions: examples, safeguards",
+                "Scientific inventions for the betterment of society",
+                "Need for scientific ethics",
+                "Practice: 2 Part-C case studies (issue → principle → application → conclusion)",
+              ],
+            },
+          ],
+        },
+        {
+          c: "GE3751",
+          n: "Principles of Management",
+          u: [
+            {
+              t: "Introduction to Management",
+              s: "Science or art, manager vs entrepreneur, roles & skills, evolution (scientific, human relations, systems, contingency), business organization types, culture, current trends.",
+              q: [
+                "★Evolution of management thought (Taylor, Fayol, Mayo, systems, contingency)",
+                "★Henri Fayol's 14 principles",
+                "★Types of business organization (sole, partnership, company, public/private)",
+                "Managerial roles and skills; manager vs entrepreneur",
+                "Organizational culture: nature, purpose",
+                "Management: science or art?",
+                "2:Define management; levels of managers",
+              ],
+            },
+            {
+              t: "Planning",
+              s: "Nature & purpose, process, types, objectives, policies, premises, strategic management, tools & techniques, decision making.",
+              q: [
+                "★Decision-making: steps and process",
+                "★Planning process and types of planning",
+                "Objectives: setting; classification of planning",
+                "Strategic management; planning tools and techniques",
+                "2:Define policy, premises, MBO",
+              ],
+            },
+            {
+              t: "Organising",
+              s: "Formal & informal organization, chart & structure, line & staff, departmentalization, delegation, centralization & decentralization, job design, HRM.",
+              q: [
+                "★Types of departmentation",
+                "★Centralization vs decentralization",
+                "Line & staff organization structure",
+                "Delegation of authority; formal vs informal organization",
+                "★HR planning, recruitment & selection process",
+                "Training & development; performance management; career planning",
+                "2:Define span of control, delegation",
+              ],
+            },
+            {
+              t: "Directing",
+              s: "Individual & group behaviour, motivation theories, job satisfaction & enrichment, leadership, communication.",
+              q: [
+                "★Motivation theories: Maslow vs Herzberg, McGregor, contemporary",
+                "★Leadership: qualities, types and theories",
+                "★Communication process, barriers, how to overcome",
+                "Job satisfaction and job enrichment",
+                "IT in communication",
+                "2:Define motivation, leadership, grapevine",
+              ],
+            },
+            {
+              t: "Controlling",
+              s: "System & process of control, budgetary & non-budgetary techniques, IT in control, productivity, direct & preventive control, reporting.",
+              q: [
+                "★Budgetary vs non-budgetary control techniques",
+                "Productivity: problems and management",
+                "★Computers & IT in management control",
+                "Direct and preventive control; control and performance",
+                "Reporting",
+                "Practice: 2 Part-C management case studies",
+              ],
+            },
+          ],
+        },
+        {
+          c: "AI3021",
+          n: "IT in Agricultural System",
+          u: [
+            {
+              t: "Precision Farming",
+              s: "Precision agriculture, ground-based sensors, remote sensing, GPS, GIS & mapping software, yield mapping, crop production modelling (DSSAT, APSIM, SWAT, CropSyst).",
+              q: [
+                "★Precision agriculture and its components",
+                "★Ground-based sensors and applications; compare with remote sensing",
+                "Remote sensing in agriculture",
+                "GPS and GIS in precision farming",
+                "★Yield mapping systems: working and benefits",
+                "★Crop production modelling (DSSAT/APSIM/SWAT/CropSyst)",
+                "2:Define georeferencing, prescription map, leaf area index",
+              ],
+            },
+            {
+              t: "Environment Control Systems",
+              s: "Artificial light, greenhouse crop growth, CO2 simulation, online plant-growth measurement, plant production models, expert systems in horticulture.",
+              q: [
+                "★Greenhouse environment control: light, CO2, growth monitoring",
+                "Artificial lighting systems",
+                "Simulation of CO2 consumption in greenhouses",
+                "Online measurement of plant growth; plant production models",
+                "Expert systems in horticulture",
+                "IoT-based greenhouse monitoring",
+              ],
+            },
+            {
+              t: "Agricultural Management",
+              s: "Farm management information systems, field operations using IT, resource optimization, linear programming, project scheduling, AI, DSS.",
+              q: [
+                "★Farm management information systems: components, role",
+                "★Linear programming in agriculture",
+                "★CPM and PERT; project scheduling",
+                "IT for field operations (irrigation, machinery, scheduling)",
+                "AI applications in agriculture; DSS",
+                "Crop-growth and field-operation simulation",
+              ],
+            },
+            {
+              t: "Weather Prediction Models",
+              s: "Climate variability, seasonal forecasting, world climate system, GCMs, systems approach to seasonal forecasts.",
+              q: [
+                "★Climate variability and seasonal forecasting",
+                "★Global climate models for seasonal forecasting",
+                "★Systems approach to applying seasonal forecasts",
+                "Earth's climate system",
+                "Forecasting and food security",
+              ],
+            },
+            {
+              t: "E-Governance in Agriculture",
+              s: "Expert systems, DSS, agricultural databases, e-commerce & e-business, technology-enhanced learning, rural development, information society.",
+              q: [
+                "★Expert systems and DSS in agriculture",
+                "★E-governance in agriculture: objectives",
+                "Agricultural & biological databases",
+                "E-commerce / e-business in agriculture",
+                "E-learning and technology-enhanced learning",
+                "IT for rural development and information society",
+              ],
+            },
+          ],
+        },
+        {
+          c: "OTD352",
+          n: "Traditional Indian Foods",
+          u: [
+            {
+              t: "Historical & Cultural Perspectives",
+              s: "Origin of agriculture, foraging to pastoralization, food as sustenance and religious/cultural symbol, customs, festivals, mourning, Kosher & Halal, fasting foods.",
+              q: [
+                "Food as a religious and cultural symbol",
+                "★Impact of customs and traditions on food habits (festivals, mourning, fasts)",
+                "Kosher and Halal foods: rules and significance",
+                "Origin of agriculture, earliest crops, subsistence patterns",
+                "Variability and diversity in food habits",
+              ],
+            },
+            {
+              t: "Traditional Food Processing",
+              s: "Traditional vs modern milling (rice, wheat, corn), oil extraction, paneer, butter, ghee, sun & osmotic drying, brining, pickling, smoking.",
+              q: [
+                "★Traditional vs modern milling of rice, wheat, corn",
+                "★Paneer, butter and ghee: traditional manufacture",
+                "★Preservation: sun drying, osmotic drying, brining, pickling, smoking",
+                "Traditional edible oil extraction",
+              ],
+            },
+            {
+              t: "Traditional Food Patterns",
+              s: "Regional breakfast/meal/snack foods, pan-Indian foods, fermented foods, pickles, beverages, sweets, street foods, IPR.",
+              q: [
+                "★Regional food patterns of India",
+                "★Regional foods gone pan-Indian / global",
+                "★Fermented foods, beverages, pickles, street foods",
+                "★IPR issues (GI tags; turmeric, neem, basmati cases)",
+                "Traditional sweets and desserts",
+              ],
+            },
+            {
+              t: "Commercial Production",
+              s: "Breads, snacks, RTE, instant mixes, frozen foods, SHGs & SMEs, tender coconut water, neera, lassi, dahi, pastes, masalas, idli/dosa batter.",
+              q: [
+                "★Challenges in commercial production of traditional foods",
+                "★RTE foods and instant mixes",
+                "★Role of SHGs and SMEs",
+                "Quality, safety, standardisation, packaging, shelf-life",
+                "Idli/dosa batter, ginger-garlic and tamarind paste, masala production",
+                "Branding and marketing; success stories",
+              ],
+            },
+            {
+              t: "Health Aspects",
+              s: "Traditional vs fast/junk food: cost, safety, nutrients, bioactives; energy & environmental cost; foods for ailments.",
+              q: [
+                "★Traditional foods vs fast/junk foods",
+                "★Bioactive components; foods for specific ailments",
+                "Energy and environmental costs",
+                "Traditional rice varieties and health",
+                "Sustainability of traditional foods",
+              ],
+            },
+          ],
+        },
+      ];
 
-  <div class="wrap" id="panel"></div>
-  <main class="wrap" id="main"></main>
-  <div id="toast"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-  <script type="module">
-    /* ─────────────────────────────────────────────────────
-       1. FIREBASE IMPORTS
-       ───────────────────────────────────────────────────── */
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import {
-      getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc,
-      query, where, onSnapshot
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-    import {
-      getStorage, ref as sRef, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
-
-    /* ─────────────────────────────────────────────────────
-       2. FIREBASE CONFIG
-       ───────────────────────────────────────────────────── */
-    const firebaseConfig = {
-      apiKey: "AIzaSyATlDCcj-TVL1DVJ8I7D0KEU3Z3Hk91AZo",
-      authDomain: "storage-59be5.firebaseapp.com",
-      projectId: "storage-59be5",
-      storageBucket: "storage-59be5.firebasestorage.app",
-      messagingSenderId: "485318027222",
-      appId: "1:485318027222:web:dde21326bf9faa45e9e677",
-      measurementId: "G-BFTQBRLH92"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    /* ─────────────────────────────────────────────────────
-       3. SUBJECT DATA
-       ───────────────────────────────────────────────────── */
-    const S = [
-      { c: "GE3791", n: "Human Values & Ethics", u: [
-        { t: "Democratic Values", s: "Equality, Liberty, Fraternity, Freedom, Justice, Pluralism, Tolerance, Respect, Freedom of Expression, Citizen Participation; French Revolution, American Independence, Indian Freedom Movement.", q: [
-          "★Core democratic values (Equality, Liberty, Fraternity, Justice) with examples",
-          "French Revolution: causes, course, influence on democratic thought",
-          "American Independence and its contribution to democratic values",
-          "Indian Freedom Movement: causes, influences, catalysts",
-          "Citizen participation in governance: elements of an effective model",
-          "Pluralism and tolerance: when is pluralism acceptable / not?",
-          "2:Define pluralism, tolerance, freedom of expression"
-        ]},
-        { t: "Secular Values", s: "Secularism in the Indian context, state disassociated from religion, acceptance of all faiths, non-discriminatory practices.", q: [
-          "★Secularism in the Indian context (Indian vs Western secularism)",
-          "Disassociation of state from religion: meaning and significance",
-          "Acceptance of all faiths (Vivekananda's view)",
-          "Non-discriminatory practices: needs, principles, limitations",
-          "Secularism in the Constitution; threats and challenges",
-          "2:Define secularism; list constitutional articles on religious freedom"
-        ]},
-        { t: "Scientific Values", s: "Scientific thinking & method, inductive & deductive thinking, hypothesis, evidence-based validation, skepticism, empiricism, rationalism, scientific temper.", q: [
-          "★Inductive vs deductive thinking with examples",
-          "★Hypothesis: concept, types, testing, level of significance",
-          "★Skepticism vs empiricism",
-          "★Rationalism and scientific temper: importance",
-          "Evidence-based validation",
-          "2:Define hypothesis, empiricism, scientific temper"
-        ]},
-        { t: "Social Ethics", s: "Ethical reasoning for social problems; gender bias; gender violence; social discrimination; constitutional protection; inclusive practices.", q: [
-          "★Gender bias: types, areas, causes in India; how to reduce",
-          "Gender-based violence: forms, causes, effects, prevention",
-          "★Social discrimination: types; constitutional provisions (Art. 12–35)",
-          "★Inclusive practices: building an inclusive society",
-          "Ethical reasoning applied to social problems",
-          "2:Define gender bias, discrimination, inclusion"
-        ]},
-        { t: "Scientific Ethics", s: "Transparency & fairness in science, inventions for betterment, unfair application of inventions, role & responsibility of scientists.", q: [
-          "★Transparency and fairness in scientific pursuits",
-          "★Role and responsibility of scientists (Part C favourite)",
-          "★Unfair application of scientific inventions: examples, safeguards",
-          "Scientific inventions for the betterment of society",
-          "Need for scientific ethics",
-          "Practice: 2 Part-C case studies (issue → principle → application → conclusion)"
-        ]}
-      ]},
-      { c: "GE3751", n: "Principles of Management", u: [
-        { t: "Introduction to Management", s: "Science or art, manager vs entrepreneur, roles & skills, evolution (scientific, human relations, systems, contingency), business organization types, culture, current trends.", q: [
-          "★Evolution of management thought (Taylor, Fayol, Mayo, systems, contingency)",
-          "★Henri Fayol's 14 principles",
-          "★Types of business organization (sole, partnership, company, public/private)",
-          "Managerial roles and skills; manager vs entrepreneur",
-          "Organizational culture: nature, purpose",
-          "Management: science or art?",
-          "2:Define management; levels of managers"
-        ]},
-        { t: "Planning", s: "Nature & purpose, process, types, objectives, policies, premises, strategic management, tools & techniques, decision making.", q: [
-          "★Decision-making: steps and process",
-          "★Planning process and types of planning",
-          "Objectives: setting; classification of planning",
-          "Strategic management; planning tools and techniques",
-          "2:Define policy, premises, MBO"
-        ]},
-        { t: "Organising", s: "Formal & informal organization, chart & structure, line & staff, departmentalization, delegation, centralization & decentralization, job design, HRM.", q: [
-          "★Types of departmentation",
-          "★Centralization vs decentralization",
-          "Line & staff organization structure",
-          "Delegation of authority; formal vs informal organization",
-          "★HR planning, recruitment & selection process",
-          "Training & development; performance management; career planning",
-          "2:Define span of control, delegation"
-        ]},
-        { t: "Directing", s: "Individual & group behaviour, motivation theories, job satisfaction & enrichment, leadership, communication.", q: [
-          "★Motivation theories: Maslow vs Herzberg, McGregor, contemporary",
-          "★Leadership: qualities, types and theories",
-          "★Communication process, barriers, how to overcome",
-          "Job satisfaction and job enrichment",
-          "IT in communication",
-          "2:Define motivation, leadership, grapevine"
-        ]},
-        { t: "Controlling", s: "System & process of control, budgetary & non-budgetary techniques, IT in control, productivity, direct & preventive control, reporting.", q: [
-          "★Budgetary vs non-budgetary control techniques",
-          "Productivity: problems and management",
-          "★Computers & IT in management control",
-          "Direct and preventive control; control and performance",
-          "Reporting",
-          "Practice: 2 Part-C management case studies"
-        ]}
-      ]},
-      { c: "AI3021", n: "IT in Agricultural System", u: [
-        { t: "Precision Farming", s: "Precision agriculture, ground-based sensors, remote sensing, GPS, GIS & mapping software, yield mapping, crop production modelling (DSSAT, APSIM, SWAT, CropSyst).", q: [
-          "★Precision agriculture and its components",
-          "★Ground-based sensors and applications; compare with remote sensing",
-          "Remote sensing in agriculture",
-          "GPS and GIS in precision farming",
-          "★Yield mapping systems: working and benefits",
-          "★Crop production modelling (DSSAT/APSIM/SWAT/CropSyst)",
-          "2:Define georeferencing, prescription map, leaf area index"
-        ]},
-        { t: "Environment Control Systems", s: "Artificial light, greenhouse crop growth, CO2 simulation, online plant-growth measurement, plant production models, expert systems in horticulture.", q: [
-          "★Greenhouse environment control: light, CO2, growth monitoring",
-          "Artificial lighting systems",
-          "Simulation of CO2 consumption in greenhouses",
-          "Online measurement of plant growth; plant production models",
-          "Expert systems in horticulture",
-          "IoT-based greenhouse monitoring"
-        ]},
-        { t: "Agricultural Management", s: "Farm management information systems, field operations using IT, resource optimization, linear programming, project scheduling, AI, DSS.", q: [
-          "★Farm management information systems: components, role",
-          "★Linear programming in agriculture",
-          "★CPM and PERT; project scheduling",
-          "IT for field operations (irrigation, machinery, scheduling)",
-          "AI applications in agriculture; DSS",
-          "Crop-growth and field-operation simulation"
-        ]},
-        { t: "Weather Prediction Models", s: "Climate variability, seasonal forecasting, world climate system, GCMs, systems approach to seasonal forecasts.", q: [
-          "★Climate variability and seasonal forecasting",
-          "★Global climate models for seasonal forecasting",
-          "★Systems approach to applying seasonal forecasts",
-          "Earth's climate system",
-          "Forecasting and food security"
-        ]},
-        { t: "E-Governance in Agriculture", s: "Expert systems, DSS, agricultural databases, e-commerce & e-business, technology-enhanced learning, rural development, information society.", q: [
-          "★Expert systems and DSS in agriculture",
-          "★E-governance in agriculture: objectives",
-          "Agricultural & biological databases",
-          "E-commerce / e-business in agriculture",
-          "E-learning and technology-enhanced learning",
-          "IT for rural development and information society"
-        ]}
-      ]},
-      { c: "OTD352", n: "Traditional Indian Foods", u: [
-        { t: "Historical & Cultural Perspectives", s: "Origin of agriculture, foraging to pastoralization, food as sustenance and religious/cultural symbol, customs, festivals, mourning, Kosher & Halal, fasting foods.", q: [
-          "Food as a religious and cultural symbol",
-          "★Impact of customs and traditions on food habits (festivals, mourning, fasts)",
-          "Kosher and Halal foods: rules and significance",
-          "Origin of agriculture, earliest crops, subsistence patterns",
-          "Variability and diversity in food habits"
-        ]},
-        { t: "Traditional Food Processing", s: "Traditional vs modern milling (rice, wheat, corn), oil extraction, paneer, butter, ghee, sun & osmotic drying, brining, pickling, smoking.", q: [
-          "★Traditional vs modern milling of rice, wheat, corn",
-          "★Paneer, butter and ghee: traditional manufacture",
-          "★Preservation: sun drying, osmotic drying, brining, pickling, smoking",
-          "Traditional edible oil extraction"
-        ]},
-        { t: "Traditional Food Patterns", s: "Regional breakfast/meal/snack foods, pan-Indian foods, fermented foods, pickles, beverages, sweets, street foods, IPR.", q: [
-          "★Regional food patterns of India",
-          "★Regional foods gone pan-Indian / global",
-          "★Fermented foods, beverages, pickles, street foods",
-          "★IPR issues (GI tags; turmeric, neem, basmati cases)",
-          "Traditional sweets and desserts"
-        ]},
-        { t: "Commercial Production", s: "Breads, snacks, RTE, instant mixes, frozen foods, SHGs & SMEs, tender coconut water, neera, lassi, dahi, pastes, masalas, idli/dosa batter.", q: [
-          "★Challenges in commercial production of traditional foods",
-          "★RTE foods and instant mixes",
-          "★Role of SHGs and SMEs",
-          "Quality, safety, standardisation, packaging, shelf-life",
-          "Idli/dosa batter, ginger-garlic and tamarind paste, masala production",
-          "Branding and marketing; success stories"
-        ]},
-        { t: "Health Aspects", s: "Traditional vs fast/junk food: cost, safety, nutrients, bioactives; energy & environmental cost; foods for ailments.", q: [
-          "★Traditional foods vs fast/junk foods",
-          "★Bioactive components; foods for specific ailments",
-          "Energy and environmental costs",
-          "Traditional rice varieties and health",
-          "Sustainability of traditional foods"
-        ]}
-      ]}
-    ];
-
-    /* ─────────────────────────────────────────────────────
-       4. CONSTANTS & STATE
-       ───────────────────────────────────────────────────── */
-    const COL = [
-      ["#7c3aed", "#ec4899"],
-      ["#0ea5e9", "#6366f1"],
-      ["#16a34a", "#65a30d"],
-      ["#f97316", "#e11d48"]
-    ];
-
-    let U = null, ID = null;
-    let R = null;            // { id: slug, name: displayName }
-    let cur = 0;
-    let timer;
-    let showMem = false;
-    let qo = {};
-    let roomUnsub = null;    // Firestore unsubscribe for the room listener
-
-    const fresh = () => ({ ck: {}, nt: {}, fl: {}, open: {}, pend: false });
-    let D = fresh();
-
-    /* ─────────────────────────────────────────────────────
-       5. UTILITY FUNCTIONS
-       ───────────────────────────────────────────────────── */
-    const why = e => (e && e.code ? " [" + e.code + "] " : " ") + ((e && e.message) || "");
-    const $ = s => document.querySelector(s);
-    const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    const qid = (i, j, k) => `${i}.${j}.${k}`;
-    const parse = q => ({
-      two: q.startsWith("2:"),
-      star: q.startsWith("★"),
-      txt: q.replace(/^2:|^★/, "")
-    });
-
-    /** Turn "My Study Group!" into "my-study-group" — a safe Firestore doc id */
-    function slugify(name) {
-      return name.trim().toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 60);
-    }
-
-    function prog(i) {
-      let t = 0, d = 0;
-      S[i].u.forEach((u, j) => u.q.forEach((q, k) => {
-        t++;
-        if (D.ck[qid(i, j, k)]) d++;
-      }));
-      return { t, d, p: t ? Math.round(d / t * 100) : 0 };
-    }
-
-    function toast(m) {
-      const t = $("#toast");
-      t.textContent = m;
-      t.style.display = "block";
-      clearTimeout(t._t);
-      t._t = setTimeout(() => t.style.display = "none", 3200);
-    }
-
-    /* ─────────────────────────────────────────────────────
-       6. PERSIST  (writes shared data to the room doc)
-       ───────────────────────────────────────────────────── */
-    function persist() {
-      clearTimeout(timer);
-      timer = setTimeout(async () => {
-        if (!R) return;
-        try {
-          // Shared data → one doc per room
-          await setDoc(doc(db, "roomdata", R.id), {
-            ck: D.ck,
-            nt: D.nt,
-            fl: D.fl,
-            updated: Date.now()
-          }, { merge: true });
-
-          // Local preferences (per device)
+      const COL = [
+        ["#7c3aed", "#ec4899"],
+        ["#0ea5e9", "#6366f1"],
+        ["#16a34a", "#65a30d"],
+        ["#f97316", "#e11d48"],
+      ];
+      const SECS = ["ck", "nt", "fl"]; // ticks, notes, files
+      const fresh = () => ({ ck: {}, nt: {}, fl: {} }),
+        freshP = () => ({ ck: {}, nt: {}, fl: {} });
+      let R = null,
+        cur = 0,
+        D = fresh(),
+        P = freshP(),
+        UI = { open: {}, pend: false },
+        V = 0,
+        timer,
+        unsub = null,
+        tok = 0,
+        loaded = false,
+        deferred = false,
+        qo = {};
+      const $ = (s) => document.querySelector(s);
+      const esc = (t) =>
+        String(t).replace(
+          /[&<>"']/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      const why = (e) => (e && e.code ? " [" + e.code + "] " : " ") + ((e && e.message) || "");
+      const ls = {
+        get: (k) => {
           try {
-            localStorage.setItem("open_" + R.id, JSON.stringify(D.open));
-            localStorage.setItem("pend_" + R.id, D.pend ? "1" : "0");
+            return localStorage.getItem(k);
+          } catch (e) {
+            return null;
+          }
+        },
+        set: (k, v) => {
+          try {
+            localStorage.setItem(k, v);
           } catch (e) {}
-        } catch (e) {
-          toast("Couldn't save: " + why(e));
-        }
-      }, 400);
-    }
-
-    /* ─────────────────────────────────────────────────────
-       7. INITIALISE
-       ───────────────────────────────────────────────────── */
-    async function init() {
-      try {
-        const cred = await signInAnonymously(auth);
-        ID = cred.user.uid;
-      } catch (e) {
-        $("#main").innerHTML = `<div class="hero empty"><h2>🔒 Sign-in failed</h2><p>${esc(why(e))}</p></div>`;
-        return;
+        },
+      };
+      const qid = (i, j, k) => `${i}_${j}_${k}`;
+      const parse = (q) => ({
+        two: q.startsWith("2:"),
+        star: q.startsWith("★"),
+        txt: q.replace(/^2:|^★/, ""),
+      });
+      const safeUrl = (u) => /^https:\/\//.test(u || "");
+      const typing = () => {
+        const a = document.activeElement;
+        return !!(a && a.tagName === "TEXTAREA" && a.dataset.n);
+      };
+      function toast(m) {
+        const t = $("#toast");
+        t.textContent = m;
+        t.style.display = "block";
+        clearTimeout(t._t);
+        t._t = setTimeout(() => (t.style.display = "none"), 3500);
+      }
+      function prog(i) {
+        let t = 0,
+          d = 0;
+        S[i].u.forEach((u, j) =>
+          u.q.forEach((q, k) => {
+            t++;
+            if (D.ck[qid(i, j, k)]) d++;
+          }),
+        );
+        return { t, d, p: t ? Math.round((d / t) * 100) : 0 };
+      }
+      async function hash(s) {
+        const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+        return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
       }
 
-      // Profile (just for display purposes)
-      try {
-        await setDoc(doc(db, "users", ID), {
-          name: "User-" + ID.slice(0, 6).toUpperCase()
-        }, { merge: true });
-      } catch (e) {}
+      /* ---- saving: only changed keys are sent (merge), so two devices never overwrite each other ---- */
+      function mark(sec, id) {
+        P[sec][id] = ++V;
+        clearTimeout(timer);
+        timer = setTimeout(flush, 600);
+      }
+      async function flush() {
+        clearTimeout(timer);
+        if (!R) return;
+        const patch = {},
+          sent = freshP();
+        let any = false;
+        for (const s of SECS)
+          for (const id in P[s]) {
+            sent[s][id] = P[s][id];
+            (patch[s] = patch[s] || {})[id] = D[s][id] !== undefined ? D[s][id] : deleteField();
+            any = true;
+          }
+        if (!any) return;
+        patch.updated = Date.now();
+        try {
+          await setDoc(doc(db, "roomdata", R.id), patch, { merge: true });
+          for (const s of SECS)
+            for (const id in sent[s]) if (P[s][id] === sent[s][id]) delete P[s][id];
+        } catch (e) {
+          toast("Couldn't save (will retry):" + why(e));
+          timer = setTimeout(flush, 5000);
+        }
+      }
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) flush();
+      });
+      addEventListener("pagehide", flush);
 
-      // User helper (kept for compatibility)
-      U = {
-        id: async () => ID,
-        profiles: async (ids) => {
-          const out = {};
-          await Promise.all(ids.map(async uid => {
-            try {
-              const s = await getDoc(doc(db, "users", uid));
-              out[uid] = s.exists() ? s.data() : { name: "User-" + uid.slice(0, 6).toUpperCase() };
-            } catch (e) {
-              out[uid] = { name: "User-" + uid.slice(0, 6).toUpperCase() };
+      /* ---- remote data ---- */
+      const same = (x, y) =>
+        Array.isArray(x)
+          ? Array.isArray(y) &&
+            x.length === y.length &&
+            x.every((f, i) => f.url === y[i].url && f.name === y[i].name)
+          : x === y;
+      const eq = (a, b) => {
+        const k = Object.keys(a);
+        return k.length === Object.keys(b).length && k.every((x) => x in b && same(a[x], b[x]));
+      };
+      function merge(data) {
+        // remote -> D, but never overwrite keys with unsent local edits
+        const ch = {};
+        for (const s of SECS) {
+          const r = { ...(data[s] || {}) };
+          for (const id in P[s]) {
+            if (D[s][id] !== undefined) r[id] = D[s][id];
+            else delete r[id];
+          }
+          if (!eq(D[s], r)) {
+            ch[s] = 1;
+            D[s] = r;
+          }
+        }
+        return ch;
+      }
+      function applyRemote(data) {
+        const ch = merge(data);
+        if (!ch.ck && !ch.nt && !ch.fl) return;
+        if (ch.ck)
+          document.querySelectorAll("input[data-q]").forEach((cb) => {
+            const on = !!D.ck[cb.dataset.q];
+            if (cb.checked !== on) {
+              cb.checked = on;
+              cb.closest("label").classList.toggle("done", on);
             }
-          }));
-          return out;
+          });
+        if (ch.nt)
+          document.querySelectorAll("textarea[data-n]").forEach((t) => {
+            if (t === document.activeElement) return;
+            const v = D.nt[t.dataset.n] || "";
+            if (t.value !== v) t.value = v;
+          });
+        if (ch.nt || ch.fl)
+          document.querySelectorAll(".qw").forEach((r) => {
+            const id = r.querySelector("input[data-q]").dataset.q,
+              n = (D.fl[id] || []).length,
+              b = r.querySelector(".clip");
+            b.textContent = "📎" + (n || "");
+            b.classList.toggle("has", n > 0 || !!D.nt[id]);
+          });
+        updateProgress();
+        tabs();
+        if (ch.fl || (UI.pend && ch.ck)) {
+          if (typing()) deferred = true;
+          else render();
+        }
+      }
+      $("#main").addEventListener("focusout", () =>
+        setTimeout(() => {
+          if (deferred && !typing()) {
+            deferred = false;
+            render();
+          }
+        }, 400),
+      );
+      function updateProgress() {
+        const p = prog(cur);
+        if ($("#pp")) {
+          $("#pp").textContent = p.p + "%";
+          $("#pc").textContent = `${p.d} of ${p.t} questions done`;
+          $("#pb").style.width = p.p + "%";
+        }
+        S[cur].u.forEach((u, j) => {
+          const n = u.q.filter((q, k) => D.ck[qid(cur, j, k)]).length,
+            e = $("#uc" + j);
+          if (e) e.textContent = `${n}/${u.q.length}`;
+        });
+      }
+
+      /* ---- rooms (room key = SHA-256 of name + passcode, so the name alone can't open a room) ---- */
+      async function openRoom(key, name) {
+        const my = ++tok;
+        await flush();
+        if (unsub) {
+          unsub();
+          unsub = null;
+        }
+        R = { id: key, name };
+        D = fresh();
+        P = freshP();
+        loaded = false;
+        deferred = false;
+        qo = {};
+        try {
+          UI.open = JSON.parse(ls.get("open_" + key) || "{}");
+        } catch (e) {
+          UI.open = {};
+        }
+        UI.pend = ls.get("pend_" + key) === "1";
+        render();
+        unsub = onSnapshot(
+          doc(db, "roomdata", key),
+          (snap) => {
+            if (my !== tok || snap.metadata.hasPendingWrites) return;
+            const data = snap.exists() ? snap.data() : {};
+            if (!loaded) {
+              loaded = true;
+              merge(data);
+              render();
+            } else applyRemote(data);
+          },
+          (err) => {
+            if (my !== tok) return;
+            loaded = true;
+            render();
+            toast("Sync error:" + why(err));
+          },
+        );
+      }
+      async function enter(name, pass) {
+        name = name.trim().slice(0, 60);
+        if (!name || !pass) {
+          toast("Enter a room name and a passcode");
+          return;
+        }
+        if (!(window.crypto && crypto.subtle)) {
+          toast("Open this page over https");
+          return;
+        }
+        const key = await hash(name.toLowerCase() + "\n" + pass);
+        ls.set("room", JSON.stringify({ key, name }));
+        await openRoom(key, name);
+      }
+      async function leave() {
+        await flush();
+        if (unsub) {
+          unsub();
+          unsub = null;
+        }
+        tok++;
+        R = null;
+        render();
+      }
+
+      /* ---- render ---- */
+      function tabs() {
+        $("#tabs").innerHTML = S.map((s, i) => {
+          const p = prog(i);
+          return `<button class="tab ${i === cur ? "on" : ""}" data-i="${i}" style="--c1:${COL[i][0]};--c2:${COL[i][1]}"><b>${s.c}</b><small>${p.p}% · ${p.d}/${p.t}</small><div class="bar"><i style="width:${p.p}%;--c1:${COL[i][0]};--c2:${COL[i][1]}"></i></div></button>`;
+        }).join("");
+      }
+      function page() {
+        if (!R) {
+          let last = {};
+          try {
+            last = JSON.parse(ls.get("room") || "{}");
+          } catch (e) {}
+          $("#main").innerHTML =
+            `<div class="hero empty"><h2>🏠 Enter your room</h2><p>Use the same room name and passcode on every device. Anyone with both can open the room, so keep the passcode private.</p>
+  <div class="row" style="justify-content:center"><input type="text" id="gn" placeholder="Room name" maxlength="60" value="${esc(last.name || "")}"></div>
+  <div class="row" style="justify-content:center"><input type="password" id="gp" placeholder="Passcode" maxlength="60" autocomplete="off"></div>
+  <div class="row" style="justify-content:center"><button class="b" id="go">Enter room</button></div></div>`;
+          return;
+        }
+        if (!loaded) {
+          $("#main").innerHTML = `<div class="hero empty"><h2>Loading room…</h2></div>`;
+          return;
+        }
+        const i = cur,
+          s = S[i],
+          p = prog(i);
+        let h = `<div class="hero"><h2>${s.c} — ${s.n}</h2><p>Room: <b>${esc(R.name)}</b> · syncs live across devices</p>
+ <div class="row" style="margin-top:0"><span class="big" id="pp">${p.p}%</span><span id="pc">${p.d} of ${p.t} questions done</span></div>
+ <div class="bar" style="margin-top:8px"><i id="pb" style="width:${p.p}%"></i></div>
+ <div class="row"><label><input type="checkbox" id="pend" ${UI.pend ? "checked" : ""}> Revision mode: only pending</label><button class="b" id="rs">Reset subject</button></div></div>`;
+        s.u.forEach((u, j) => {
+          const qs = u.q.map((q, k) => ({ ...parse(q), k })),
+            ud = qs.filter((x) => D.ck[qid(i, j, x.k)]).length;
+          h += `<details ${UI.open[i + "_" + j] !== false ? "open" : ""} data-u="${i}_${j}"><summary>Unit ${j + 1} — ${u.t}<span id="uc${j}">${ud}/${qs.length}</span></summary><div class="in"><div class="syl"><b>Syllabus:</b> ${u.s}</div>`;
+          qs.forEach((x) => {
+            const id = qid(i, j, x.k),
+              c = !!D.ck[id];
+            if (UI.pend && c) return;
+            const fl = D.fl[id] || [],
+              has = fl.length || D.nt[id];
+            h += `<div class="qw"><label class="q ${c ? "done" : ""} ${x.star ? "star" : ""} ${x.two ? "two" : ""}"><input type="checkbox" data-q="${id}" ${c ? "checked" : ""}><span>${x.two ? "<b>2-mark:</b> " : ""}${x.txt}</span></label><button class="b clip ${has ? "has" : ""}" data-qn="${id}" title="Notes & files">📎${fl.length || ""}</button></div>`;
+            if (qo[id])
+              h += `<div class="qn"><textarea data-n="${id}" maxlength="6000" placeholder="Hints / notes for this question…">${esc(D.nt[id] || "")}</textarea>
+   ${fl.map((f, n) => `<div class="f">📄<span>${esc(f.name)}</span>${safeUrl(f.url) ? `<a class="b" href="${esc(f.url)}" target="_blank" rel="noopener">Open</a>` : ""}<button class="b" data-fx="${id}|${n}">✕</button></div>`).join("")}
+   <div class="row"><button class="b" data-at="${id}">⬆ Attach file</button><button class="b" data-dl="${id}">⬇ Download note</button><small style="color:var(--mut)">txt, md, pdf, docx, pptx · max 10 MB</small></div></div>`;
+          });
+          h += "</div></details>";
+        });
+        $("#main").innerHTML = h;
+      }
+      function render() {
+        $("#rnow").textContent = R ? R.name : "No room";
+        if (!R) {
+          $("#tabs").innerHTML = "";
+          page();
+          return;
+        }
+        document.documentElement.style.setProperty("--sc", COL[cur][0]);
+        document.documentElement.style.setProperty("--sc2", COL[cur][1]);
+        tabs();
+        page();
+      }
+
+      /* ---- events ---- */
+      $("#chip").onclick = leave;
+      $("#tabs").onclick = (e) => {
+        const t = e.target.closest(".tab");
+        if (t) {
+          cur = +t.dataset.i;
+          render();
+          scrollTo(0, 0);
         }
       };
-
-      // If a room name was saved before, auto-load it
-      const savedSlug = localStorage.getItem("roomSlug");
-      const savedName = localStorage.getItem("roomName");
-      if (savedSlug && savedName) {
-        await loadRoom(savedSlug, savedName);
-      } else {
-        render();
-      }
-    }
-
-    /* ─────────────────────────────────────────────────────
-       8. LOAD / SWITCH ROOM
-       ───────────────────────────────────────────────────── */
-    async function loadRoom(slug, displayName) {
-      // Detach previous listener
-      if (roomUnsub) { roomUnsub(); roomUnsub = null; }
-
-      R = { id: slug, name: displayName };
-
-      // Make sure the room doc exists (harmless if already there)
-      try {
-        const ref = doc(db, "rooms", slug);
-        const s = await getDoc(ref);
-        if (!s.exists()) {
-          await setDoc(ref, {
-            name: displayName,
-            created: Date.now(),
-            createdBy: ID
-          });
-        }
-      } catch (e) {
-        // Not fatal
-      }
-
-      // Reset local state, then load per-device prefs
-      D = fresh();
-      try {
-        D.open = JSON.parse(localStorage.getItem("open_" + slug) || "{}");
-        D.pend = localStorage.getItem("pend_" + slug) === "1";
-      } catch (e) {}
-
-      // Live listener for shared room data
-      roomUnsub = onSnapshot(doc(db, "roomdata", slug), snap => {
-        if (snap.exists()) {
-          const data = snap.data() || {};
-          D.ck = data.ck || {};
-          D.nt = data.nt || {};
-          D.fl = data.fl || {};
-        } else {
-          D.ck = {}; D.nt = {}; D.fl = {};
-        }
-        // Re-render everything so both devices stay in sync
-        render();
-      }, (err) => {
-        toast("Room listener failed: " + why(err));
+      $("#main").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.target.id === "gn" || e.target.id === "gp")) $("#go").click();
       });
-
-      // Update header chip
-      updateRoomChip();
-    }
-
-    function updateRoomChip() {
-      $("#rnow").textContent = R ? R.name : "No room";
-    }
-
-    /* ─────────────────────────────────────────────────────
-       9. PROMPT FOR ROOM NAME
-       ───────────────────────────────────────────────────── */
-    async function promptRoom() {
-      const curName = R ? R.name : (localStorage.getItem("roomName") || "");
-      const n = prompt(
-        "📝 Enter room name.\n\n" +
-        "Type the SAME name on every device (PC, mobile, tablet) to open the same room.\n\n" +
-        "Example: 'Study Group'",
-        curName
-      );
-      if (n === null) return;                    // user cancelled
-      const trimmed = n.trim().slice(0, 60);
-      if (!trimmed) { toast("Name can't be empty"); return; }
-
-      const slug = slugify(trimmed);
-      if (!slug) { toast("Use letters or numbers"); return; }
-
-      localStorage.setItem("roomName", trimmed);
-      localStorage.setItem("roomSlug", slug);
-
-      await loadRoom(slug, trimmed);
-      toast("Room: " + trimmed);
-    }
-
-    /* ─────────────────────────────────────────────────────
-       10. RENDER
-       ───────────────────────────────────────────────────── */
-    function tabs() {
-      $("#tabs").innerHTML = S.map((s, i) => {
-        const p = prog(i);
-        return `<button class="tab ${i === cur ? "on" : ""}" data-i="${i}" style="--c1:${COL[i][0]};--c2:${COL[i][1]}"><b>${s.c}</b><small>${p.p}% · ${p.d}/${p.t}</small><div class="bar"><i style="width:${p.p}%;--c1:${COL[i][0]};--c2:${COL[i][1]}"></i></div></button>`;
-      }).join("");
-    }
-
-    function page() {
-      if (!R) {
-        $("#main").innerHTML = `<div class="hero empty">
-          <h2>🏠 Set a room name</h2>
-          <p>Tap the <b>logo</b> at the top, or use the button below.</p>
-          <p style="opacity:.85">Use the same name on every device — PC, mobile, tablet — to open the same live-synced room.</p>
-          <div class="row" style="justify-content:center">
-            <button class="b" id="setRoomBtn">📝 Set room name</button>
-          </div>
-        </div>`;
-        return;
-      }
-
-      const i = cur, s = S[i], p = prog(i);
-
-      let h = `<div class="hero"><h2>${s.c} — ${s.n}</h2><p>Room: <b>${esc(R.name)}</b> · changes sync live across devices</p>
-        <div class="row" style="margin-top:0"><span class="big" id="pp">${p.p}%</span><span id="pc">${p.d} of ${p.t} questions done</span></div>
-        <div class="bar" style="margin-top:8px"><i id="pb" style="width:${p.p}%"></i></div>
-        <div class="row"><label><input type="checkbox" id="pend" ${D.pend ? "checked" : ""}> Revision mode: only pending</label><button class="b" id="rs">Reset subject</button></div></div>`;
-
-      s.u.forEach((u, j) => {
-        const qs = u.q.map((q, k) => ({ ...parse(q), k }));
-        const ud = qs.filter(x => D.ck[qid(i, j, x.k)]).length;
-
-        h += `<details ${D.open[i + "." + j] !== false ? "open" : ""} data-u="${i}.${j}"><summary>Unit ${j + 1} — ${u.t}<span id="uc${j}">${ud}/${qs.length}</span></summary><div class="in"><div class="syl"><b>Syllabus:</b> ${u.s}</div>`;
-
-        qs.forEach(x => {
-          const id = qid(i, j, x.k), c = !!D.ck[id];
-          if (D.pend && c) return;
-          const fl = D.fl[id] || [], has = fl.length || D.nt[id];
-
-          h += `<div class="qw"><label class="q ${c ? "done" : ""} ${x.star ? "star" : ""} ${x.two ? "two" : ""}"><input type="checkbox" data-q="${id}" data-j="${j}" ${c ? "checked" : ""}><span>${x.two ? "<b>2-mark:</b> " : ""}${x.txt}</span></label><button class="b clip ${has ? "has" : ""}" data-qn="${id}" title="Notes & files">📎${fl.length ? fl.length : ""}</button></div>`;
-
-          if (qo[id]) {
-            h += `<div class="qn"><textarea data-n="${id}" placeholder="Hints / notes for this question…">${esc(D.nt[id] || "")}</textarea>
-              ${fl.map((f, n) => `<div class="f">📄<span>${esc(f.name)}</span><button class="b" data-fd="${id}|${n}">⬇</button><button class="b" data-fx="${id}|${n}">✕</button></div>`).join("")}
-              <div class="row"><button class="b" data-at="${id}">⬆ Attach file</button><button class="b" data-dl="${id}">⬇ Download note</button><small style="color:var(--mut)">txt, md, pdf, docx, pptx</small></div></div>`;
-          }
-        });
-
-        h += "</div></details>";
-      });
-
-      $("#main").innerHTML = h;
-    }
-
-    function render() {
-      updateRoomChip();
-      if (!R) { $("#tabs").innerHTML = ""; page(); return; }
-      const c = COL[cur];
-      document.documentElement.style.setProperty("--sc", c[0]);
-      document.documentElement.style.setProperty("--sc2", c[1]);
-      tabs();
-      page();
-    }
-
-    /* ─────────────────────────────────────────────────────
-       11. EVENT HANDLERS — header
-       ───────────────────────────────────────────────────── */
-    $("#tabs").onclick = e => {
-      const t = e.target.closest(".tab");
-      if (t) { cur = +t.dataset.i; render(); scrollTo(0, 0); }
-    };
-
-    // Logo click → prompt for room name
-    $("#logoBtn").onclick = promptRoom;
-
-    // Room chip click → same prompt
-    $("#roomChip").onclick = promptRoom;
-
-    /* ─────────────────────────────────────────────────────
-       12. EVENT HANDLERS — main panel
-       ───────────────────────────────────────────────────── */
-    $("#main").addEventListener("change", e => {
-      const t = e.target;
-
-      if (t.id === "pend") {
-        D.pend = t.checked;
-        persist();
-        page();
-        return;
-      }
-
-      if (t.dataset.q) {
-        t.checked ? D.ck[t.dataset.q] = 1 : delete D.ck[t.dataset.q];
-        persist();
-
-        t.closest("label").classList.toggle("done", t.checked);
-
-        const p = prog(cur);
-        if ($("#pp")) $("#pp").textContent = p.p + "%";
-        if ($("#pc")) $("#pc").textContent = `${p.d} of ${p.t} questions done`;
-        if ($("#pb")) $("#pb").style.width = p.p + "%";
-
-        const j = +t.dataset.j;
-        let n = 0;
-        S[cur].u[j].q.forEach((q, k) => { if (D.ck[qid(cur, j, k)]) n++; });
-        const uc = $("#uc" + j);
-        if (uc) uc.textContent = `${n}/${S[cur].u[j].q.length}`;
-        tabs();
-      }
-    });
-
-    $("#main").addEventListener("input", e => {
-      if (e.target.dataset.n) {
-        D.nt[e.target.dataset.n] = e.target.value;
-        persist();
-      }
-    });
-
-    $("#main").addEventListener("toggle", e => {
-      if (e.target.dataset && e.target.dataset.u) {
-        D.open[e.target.dataset.u] = e.target.open;
-        persist();
-      }
-    }, true);
-
-    $("#main").addEventListener("click", async e => {
-      const b = e.target.closest("button");
-      if (!b) return;
-
-      if (b.id === "setRoomBtn") return promptRoom();
-
-      if (b.id === "rs") {
-        if (confirm("Clear all ticks for " + S[cur].c + "?")) {
-          S[cur].u.forEach((u, j) => u.q.forEach((q, k) => delete D.ck[qid(cur, j, k)]));
-          persist();
-          render();
-        }
-        return;
-      }
-
-      if (b.dataset.qn) { qo[b.dataset.qn] = !qo[b.dataset.qn]; page(); return; }
-
-      if (b.dataset.at) {
-        const q = b.dataset.at;
-        const f = document.createElement("input");
-        f.type = "file";
-        f.accept = ".txt,.md,.pdf,.docx,.pptx";
-        f.onchange = () => f.files[0] && attach(q, f.files[0]);
-        f.click();
-        return;
-      }
-
-      if (b.dataset.dl) {
-        const q = b.dataset.dl;
-        dl(`note-${q.replace(/\./g, "-")}.txt`, D.nt[q] || "");
-        return;
-      }
-
-      if (b.dataset.fd) {
-        const [q, n] = b.dataset.fd.split("|"), f = D.fl[q][n];
-        try { dl(f.name, await (await fetch(f.url)).blob()); }
-        catch (er) { toast("Couldn't fetch file"); }
-        return;
-      }
-
-      if (b.dataset.fx) {
-        const [q, n] = b.dataset.fx.split("|");
-        if (confirm("Remove this file from the question?")) {
-          D.fl[q].splice(n, 1);
-          persist();
+      $("#main").addEventListener("change", (e) => {
+        const t = e.target;
+        if (t.id === "pend") {
+          UI.pend = t.checked;
+          ls.set("pend_" + R.id, t.checked ? "1" : "0");
           page();
+          return;
         }
-      }
-    });
-
-    /* ─────────────────────────────────────────────────────
-       13. DOWNLOAD & FILE ATTACH HELPERS
-       ───────────────────────────────────────────────────── */
-    function dl(name, data) {
-      try {
-        const blob = data instanceof Blob ? data : new Blob([String(data)], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = name;
-        document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-        toast("Saved ✓");
-      } catch (e) { toast("Couldn't save"); }
-    }
-
-    async function attach(q, f) {
-      const ext = f.name.split(".").pop().toLowerCase();
-      let blob, name = f.name;
-
-      try {
-        if (ext === "docx" || ext === "pptx") {
-          if (!window.JSZip) { toast("Reader not loaded, try again"); return; }
-          const z = await JSZip.loadAsync(f);
-          const ns = Object.keys(z.files)
-            .filter(n => ext === "docx" ? n === "word/document.xml" : /^ppt\/slides\/slide\d+\.xml$/.test(n))
-            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-          const out = [];
-          for (const n of ns) {
-            const x = await z.file(n).async("string");
-            out.push(x.replace(/<\/(w:p|a:p)>/g, "\n")
-              .replace(/<[^>]+>/g, "")
-              .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&"));
+        if (t.dataset.q) {
+          t.checked ? (D.ck[t.dataset.q] = 1) : delete D.ck[t.dataset.q];
+          mark("ck", t.dataset.q);
+          if (UI.pend) {
+            render();
+            return;
           }
-          blob = new Blob([out.join("\n\n")], { type: "text/plain" });
-          name += ".txt";
+          t.closest("label").classList.toggle("done", t.checked);
+          updateProgress();
+          tabs();
         }
-        else if (ext === "pdf") blob = new Blob([f], { type: "application/pdf" });
-        else if (ext === "txt") blob = new Blob([f], { type: "text/plain" });
-        else if (ext === "md")  blob = new Blob([f], { type: "text/markdown" });
-        else { toast("Use txt, md, pdf, docx or pptx (convert old .doc/.ppt first)"); return; }
+      });
+      $("#main").addEventListener("input", (e) => {
+        const id = e.target.dataset.n;
+        if (!id) return;
+        e.target.value ? (D.nt[id] = e.target.value) : delete D.nt[id];
+        mark("nt", id);
+      });
+      $("#main").addEventListener(
+        "toggle",
+        (e) => {
+          const u = e.target.dataset && e.target.dataset.u;
+          if (u && R) {
+            UI.open[u] = e.target.open;
+            ls.set("open_" + R.id, JSON.stringify(UI.open));
+          }
+        },
+        true,
+      );
+      $("#main").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        if (b.id === "go") return enter($("#gn").value, $("#gp").value);
+        if (b.id === "rs") {
+          if (confirm("Clear all ticks for " + S[cur].c + "?")) {
+            S[cur].u.forEach((u, j) =>
+              u.q.forEach((q, k) => {
+                const id = qid(cur, j, k);
+                if (D.ck[id]) {
+                  delete D.ck[id];
+                  mark("ck", id);
+                }
+              }),
+            );
+            render();
+          }
+          return;
+        }
+        if (b.dataset.qn) {
+          qo[b.dataset.qn] = !qo[b.dataset.qn];
+          page();
+          return;
+        }
+        if (b.dataset.at) {
+          const q = b.dataset.at,
+            f = document.createElement("input");
+          f.type = "file";
+          f.accept = ".txt,.md,.pdf,.docx,.pptx";
+          f.onchange = () => f.files[0] && attach(q, f.files[0]);
+          f.click();
+          return;
+        }
+        if (b.dataset.dl) {
+          const q = b.dataset.dl,
+            a = document.createElement("a");
+          a.href = URL.createObjectURL(new Blob([D.nt[q] || ""], { type: "text/plain" }));
+          a.download = "note-" + q + ".txt";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+          return;
+        }
+        if (b.dataset.fx) {
+          const [q, n] = b.dataset.fx.split("|");
+          if (confirm("Remove this file from the question?")) {
+            D.fl[q] = D.fl[q].filter((_, i) => i !== +n);
+            if (!D.fl[q].length) delete D.fl[q];
+            mark("fl", q);
+            page();
+          }
+        }
+      });
 
-        toast("Uploading…");
-        const path = "files/" + R.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + name;
-        const r = await uploadBytes(sRef(storage, path), blob);
-        const url = await getDownloadURL(r.ref);
-        (D.fl[q] = D.fl[q] || []).push({ url, name });
-        persist();
-        page();
-        toast(ext === "docx" || ext === "pptx" ? "Attached (text extracted)" : "Attached ✓");
-      } catch (e) {
-        toast("Upload failed" + (e && e.code ? ": " + e.code : ""));
+      /* ---- file attach ---- */
+      async function attach(q, f) {
+        if (!R) return;
+        const room = R.id;
+        if (f.size > 10 * 1024 * 1024) {
+          toast("File too big (max 10 MB)");
+          return;
+        }
+        const ext = f.name.split(".").pop().toLowerCase();
+        let blob,
+          name = f.name;
+        try {
+          if (ext === "docx" || ext === "pptx") {
+            if (!window.JSZip) {
+              toast("Reader not loaded, try again");
+              return;
+            }
+            const z = await JSZip.loadAsync(f),
+              ns = Object.keys(z.files)
+                .filter((n) =>
+                  ext === "docx"
+                    ? n === "word/document.xml"
+                    : /^ppt\/slides\/slide\d+\.xml$/.test(n),
+                )
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+              out = [];
+            for (const n of ns) {
+              const x = await z.file(n).async("string");
+              out.push(
+                x
+                  .replace(/<\/(w:p|a:p)>/g, "\n")
+                  .replace(/<(w:br|w:tab)[^>]*\/>/g, " ")
+                  .replace(/<[^>]+>/g, "")
+                  .replace(/&lt;/g, "<")
+                  .replace(/&gt;/g, ">")
+                  .replace(/&quot;/g, '"')
+                  .replace(/&apos;/g, "'")
+                  .replace(/&amp;/g, "&"),
+              );
+            }
+            blob = new Blob([out.join("\n\n")], { type: "text/plain" });
+            name += ".txt";
+          } else if (ext === "pdf") blob = new Blob([f], { type: "application/pdf" });
+          else if (ext === "txt") blob = new Blob([f], { type: "text/plain" });
+          else if (ext === "md") blob = new Blob([f], { type: "text/markdown" });
+          else {
+            toast("Use txt, md, pdf, docx or pptx (convert old .doc/.ppt first)");
+            return;
+          }
+          toast("Uploading…");
+          const r = await uploadBytes(
+              sRef(storage, `files/${room}/${Date.now()}-${name.replace(/[^\w.\-]+/g, "_")}`),
+              blob,
+            ),
+            url = await getDownloadURL(r.ref);
+          if (!R || R.id !== room) return;
+          D.fl[q] = [...(D.fl[q] || []), { url, name }];
+          mark("fl", q);
+          page();
+          toast(ext === "docx" || ext === "pptx" ? "Attached (text extracted)" : "Attached ✓");
+        } catch (e) {
+          toast("Upload failed:" + why(e));
+        }
       }
-    }
 
-    /* ─────────────────────────────────────────────────────
-       14. START
-       ───────────────────────────────────────────────────── */
-    init();
-  </script>
-</body>
+      /* ---- start ---- */
+      (async () => {
+        try {
+          await signInAnonymously(auth);
+        } catch (e) {
+          $("#main").innerHTML =
+            `<div class="hero empty"><h2>🔒 Sign-in failed</h2><p>${esc(why(e))}</p><p>Enable Anonymous sign-in in Firebase → Authentication.</p></div>`;
+          return;
+        }
+        let last = null;
+        try {
+          last = JSON.parse(ls.get("room") || "null");
+        } catch (e) {}
+        if (last && last.key && last.name) openRoom(last.key, last.name);
+        else render();
+      })();
+    </script>
+  </body>
 </html>
