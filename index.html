@@ -4,10 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>7th semester Study Hub</title>
-    <link
-      rel="icon"
-      href="logo.png"
-    />
+    <link rel="icon" href="logo.png" />
     <style>
       :root {
         box-sizing: border-box;
@@ -51,12 +48,7 @@
         margin: 0;
         background: var(--bg);
         color: var(--ink);
-        font:
-          16px/1.5 system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
+        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       }
       header {
         position: sticky;
@@ -332,6 +324,25 @@
       .f span {
         flex: 1;
       }
+      .file-list {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 8px 10px;
+        margin: 6px 0 8px;
+        border-left: 4px solid var(--sc);
+      }
+      .file-list .f {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+        padding: 4px 0;
+        word-break: break-all;
+      }
+      .file-list .f span {
+        flex: 1;
+        color: var(--ink);
+      }
       .empty {
         text-align: center;
         padding: 40px 10px;
@@ -421,12 +432,7 @@
         onSnapshot,
         deleteField,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-      import {
-        getStorage,
-        ref as sRef,
-        uploadBytes,
-        getDownloadURL,
-      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+
       const app = initializeApp({
         apiKey: "AIzaSyATlDCcj-TVL1DVJ8I7D0KEU3Z3Hk91AZo",
         authDomain: "storage-59be5.firebaseapp.com",
@@ -436,9 +442,9 @@
         appId: "1:485318027222:web:dde21326bf9faa45e9e677",
       });
       const auth = getAuth(app),
-        db = getFirestore(app),
-        storage = getStorage(app);
-            const S = [
+        db = getFirestore(app);
+
+      const S = [
         {
           c: "GE3791",
           n: "Human Values & Ethics",
@@ -815,14 +821,14 @@
           ],
         },
       ];
-      
+
       const COL = [
         ["#7c3aed", "#ec4899"],
         ["#0ea5e9", "#6366f1"],
         ["#16a34a", "#65a30d"],
         ["#f97316", "#e11d48"],
       ];
-      const SECS = ["ck", "nt", "fl"]; // ticks, notes, files
+      const SECS = ["ck", "nt", "fl"];
       const fresh = () => ({ ck: {}, nt: {}, fl: {} }),
         freshP = () => ({ ck: {}, nt: {}, fl: {} });
       let R = null,
@@ -864,7 +870,6 @@
         star: q.startsWith("★"),
         txt: q.replace(/^2:|^★/, ""),
       });
-      const safeUrl = (u) => /^https:\/\//.test(u || "");
       const typing = () => {
         const a = document.activeElement;
         return !!(a && a.tagName === "TEXTAREA" && a.dataset.n);
@@ -892,7 +897,6 @@
         return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
       }
 
-      /* ---- saving: only changed keys are sent (merge), so two devices never overwrite each other ---- */
       function mark(sec, id) {
         P[sec][id] = ++V;
         clearTimeout(timer);
@@ -926,19 +930,25 @@
       });
       addEventListener("pagehide", flush);
 
-      /* ---- remote data ---- */
-      const same = (x, y) =>
-        Array.isArray(x)
-          ? Array.isArray(y) &&
-            x.length === y.length &&
-            x.every((f, i) => f.url === y[i].url && f.name === y[i].name)
-          : x === y;
+      const same = (x, y) => {
+        if (Array.isArray(x)) {
+          if (!Array.isArray(y) || x.length !== y.length) return false;
+          return x.every((f, i) => {
+            const g = y[i];
+            return (
+              f.name === g.name &&
+              f.type === g.type &&
+              (f.data || "").length === (g.data || "").length
+            );
+          });
+        }
+        return x === y;
+      };
       const eq = (a, b) => {
         const k = Object.keys(a);
         return k.length === Object.keys(b).length && k.every((x) => x in b && same(a[x], b[x]));
       };
       function merge(data) {
-        // remote -> D, but never overwrite keys with unsent local edits
         const ch = {};
         for (const s of SECS) {
           const r = { ...(data[s] || {}) };
@@ -1007,7 +1017,6 @@
         });
       }
 
-      /* ---- rooms (room key = SHA-256 of name + passcode, so the name alone can't open a room) ---- */
       async function openRoom(key, name) {
         const my = ++tok;
         await flush();
@@ -1072,7 +1081,6 @@
         render();
       }
 
-      /* ---- render ---- */
       function tabs() {
         $("#tabs").innerHTML = S.map((s, i) => {
           const p = prog(i);
@@ -1114,10 +1122,11 @@
             const fl = D.fl[id] || [],
               has = fl.length || D.nt[id];
             h += `<div class="qw"><label class="q ${c ? "done" : ""} ${x.star ? "star" : ""} ${x.two ? "two" : ""}"><input type="checkbox" data-q="${id}" ${c ? "checked" : ""}><span>${x.two ? "<b>2-mark:</b> " : ""}${x.txt}</span></label><button class="b clip ${has ? "has" : ""}" data-qn="${id}" title="Notes & files">📎${fl.length || ""}</button></div>`;
+            if (fl.length > 0)
+              h += `<div class="file-list">${fl.map((f, n) => `<div class="f">📄<span>${esc(f.name)}</span><a class="b" href="data:${esc(f.type || "application/octet-stream")};base64,${f.data}" download="${esc(f.name)}">⬇ Download</a><button class="b" data-fv="${id}|${n}">👁 View</button><button class="b" data-fx="${id}|${n}">✕</button></div>`).join("")}</div>`;
             if (qo[id])
               h += `<div class="qn"><textarea data-n="${id}" maxlength="6000" placeholder="Hints / notes for this question…">${esc(D.nt[id] || "")}</textarea>
-   ${fl.map((f, n) => `<div class="f">📄<span>${esc(f.name)}</span>${safeUrl(f.url) ? `<a class="b" href="${esc(f.url)}" target="_blank" rel="noopener">Open</a>` : ""}<button class="b" data-fx="${id}|${n}">✕</button></div>`).join("")}
-   <div class="row"><button class="b" data-at="${id}">⬆ Attach file</button><button class="b" data-dl="${id}">⬇ Download note</button><small style="color:var(--mut)">txt, md, pdf, docx, pptx · max 10 MB</small></div></div>`;
+   <div class="row"><button class="b" data-at="${id}">⬆ Attach file</button><button class="b" data-dl="${id}">⬇ Download note</button><small style="color:var(--mut)">txt, md, pdf, docx, pptx · max 500 KB (stored in DB)</small></div></div>`;
           });
           h += "</div></details>";
         });
@@ -1136,7 +1145,6 @@
         page();
       }
 
-      /* ---- events ---- */
       $("#chip").onclick = leave;
       $("#tabs").onclick = (e) => {
         const t = e.target.closest(".tab");
@@ -1230,6 +1238,19 @@
           setTimeout(() => URL.revokeObjectURL(a.href), 5000);
           return;
         }
+        if (b.dataset.fv) {
+          const [q, n] = b.dataset.fv.split("|");
+          const f = (D.fl[q] || [])[+n];
+          if (f && f.data) {
+            const blob = b64ToBlob(f.data, f.type || "application/octet-stream");
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank", "noopener");
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+          } else {
+            toast("File data missing");
+          }
+          return;
+        }
         if (b.dataset.fx) {
           const [q, n] = b.dataset.fx.split("|");
           if (confirm("Remove this file from the question?")) {
@@ -1241,17 +1262,37 @@
         }
       });
 
-      /* ---- file attach ---- */
+      function b64ToBlob(b64, mime) {
+        const bin = atob(b64);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        return new Blob([arr], { type: mime });
+      }
+
+      function fileToB64(file) {
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => {
+            const s = r.result;
+            const i = s.indexOf(",");
+            resolve(s.slice(i + 1));
+          };
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+      }
+
       async function attach(q, f) {
         if (!R) return;
         const room = R.id;
-        if (f.size > 10 * 1024 * 1024) {
-          toast("File too big (max 10 MB)");
+        if (f.size > 500 * 1024) {
+          toast("File too big (max 500 KB, since we save inside Firestore)");
           return;
         }
         const ext = f.name.split(".").pop().toLowerCase();
         let blob,
-          name = f.name;
+          name = f.name,
+          mime = f.type || "application/octet-stream";
         try {
           if (ext === "docx" || ext === "pptx") {
             if (!window.JSZip) {
@@ -1283,30 +1324,37 @@
             }
             blob = new Blob([out.join("\n\n")], { type: "text/plain" });
             name += ".txt";
-          } else if (ext === "pdf") blob = new Blob([f], { type: "application/pdf" });
-          else if (ext === "txt") blob = new Blob([f], { type: "text/plain" });
-          else if (ext === "md") blob = new Blob([f], { type: "text/markdown" });
-          else {
-            toast("Use txt, md, pdf, docx or pptx (convert old .doc/.ppt first)");
+            mime = "text/plain";
+          } else if (ext === "pdf") {
+            blob = new Blob([f], { type: "application/pdf" });
+            mime = "application/pdf";
+          } else if (ext === "txt") {
+            blob = new Blob([f], { type: "text/plain" });
+            mime = "text/plain";
+          } else if (ext === "md") {
+            blob = new Blob([f], { type: "text/markdown" });
+            mime = "text/markdown";
+          } else {
+            toast("Use txt, md, pdf, docx or pptx");
             return;
           }
-          toast("Uploading…");
-          const r = await uploadBytes(
-              sRef(storage, `files/${room}/${Date.now()}-${name.replace(/[^\w.\-]+/g, "_")}`),
-              blob,
-            ),
-            url = await getDownloadURL(r.ref);
+          if (blob.size > 500 * 1024) {
+            toast("File too big after processing (max 500 KB)");
+            return;
+          }
+          toast("Saving…");
+          const b64 = await fileToB64(blob);
           if (!R || R.id !== room) return;
-          D.fl[q] = [...(D.fl[q] || []), { url, name }];
+          D.fl[q] = [...(D.fl[q] || []), { name, type: mime, data: b64 }];
           mark("fl", q);
+          qo[q] = true;
           page();
-          toast(ext === "docx" || ext === "pptx" ? "Attached (text extracted)" : "Attached ✓");
+          toast("Attached ✓ (saved in DB)");
         } catch (e) {
-          toast("Upload failed:" + why(e));
+          toast("Attach failed:" + why(e));
         }
       }
 
-      /* ---- start ---- */
       (async () => {
         try {
           await signInAnonymously(auth);
